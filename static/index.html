@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwriting Assignment Maker</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0a0e1a',
+                            surface: 'rgba(15, 23, 42, 0.8)',
+                            primary: '#6366f1',
+                            secondary: '#f59e0b',
+                            success: '#10b981',
+                            textPrimary: '#f1f5f9',
+                            textMuted: '#94a3b8',
+                            ink: '#1e3a8a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'paper': '0 4px 6px -1px rgba(0,0,0,0.1), 0 25px 50px -12px rgba(0,0,0,0.4)',
+                        'glow': '0 0 20px rgba(99, 102, 241, 0.3)',
+                    },
+                    animation: {
+                        'dash-flow': 'dash-flow 10s linear infinite',
+                        'orb-pulse': 'orb-pulse 15s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        'dash-flow': {
+                            '0%': { backgroundPosition: '0% 0%' },
+                            '100%': { backgroundPosition: '100% 100%' }
+                        },
+                        'orb-pulse': {
+                            '0%': { transform: 'scale(1) translate(0, 0)', opacity: '0.3' },
+                            '100%': { transform: 'scale(1.2) translate(50px, -50px)', opacity: '0.5' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css"/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css"/>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    
+    <style>
+        body {
+            background-color: #0a0e1a;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* App-like feel */
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.4);
+        }
+        
+        /* Glassmorphism utility */
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        /* Paper utility */
+        .paper-sheet {
+            background: #fefefe;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 25px 50px -12px rgba(0,0,0,0.5);
+            border-radius: 2px;
+            position: relative;
+        }
+        .paper-sheet::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent 95%, rgba(0,0,0,0.02) 100%),
+                        linear-gradient(180deg, transparent 95%, rgba(0,0,0,0.02) 100%);
+            pointer-events: none;
+        }
+
+        /* Animated Dashed Border */
+        .dashed-border-animated {
+            background-image: repeating-linear-gradient(45deg, 
+                rgba(99, 102, 241, 0.5) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(99, 102, 241, 0.5) 50%, 
+                rgba(99, 102, 241, 0.5) 75%, 
+                transparent 75%, 
+                transparent);
+            background-size: 20px 20px;
+            background-clip: padding-box;
+            border: 2px solid transparent;
+            animation: dash-flow 2s linear infinite;
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+            transition: transform 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 2px;
+        }
+
+        /* Transitions */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        button:hover {
+            transform: scale(1.02);
+        }
+
+        .bg-gradient-orb {
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(10,14,26,0) 70%);
+            z-index: -1;
+            filter: blur(60px);
+        }
+        .bg-gradient-orb-2 {
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, rgba(10,14,26,0) 70%);
+            z-index: -1;
+            filter: blur(60px);
+        }
+    </style>
+</head>
+<body x-data="app" class="flex h-screen w-screen text-brand-textPrimary font-sans antialiased selection:bg-brand-primary selection:text-white relative">
+    
+    <!-- Background Orbs -->
+    <div class="bg-gradient-orb animate-orb-pulse"></div>
+    <div class="bg-gradient-orb-2 animate-orb-pulse" style="animation-delay: -5s;"></div>
+
+    <!-- Left Sidebar -->
+    <aside 
+        class="glass z-20 flex flex-col items-start pt-6 pb-6 transition-all border-r border-slate-800"
+        :class="sidebarExpanded ? 'w-[240px]' : 'w-[72px]'"
+        @mouseenter="sidebarExpanded = true"
+        @mouseleave="sidebarExpanded = false"
+    >
+        <div class="flex items-center justify-center w-full mb-8 px-4" :class="sidebarExpanded ? 'justify-start' : 'justify-center'">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-purple-600 flex items-center justify-center shadow-glow shrink-0">
+                <i class="ph-fill ph-pen-nib text-white text-lg"></i>
+            </div>
+            <span class="ml-3 font-semibold text-sm whitespace-nowrap overflow-hidden transition-opacity duration-200" 
+                  :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 w-0 ml-0'">
+                Glyph Studio
+            </span>
+        </div>
+
+        <nav class="flex-1 w-full space-y-2 px-2">
+            <template x-for="item in navItems" :key="item.id">
+                <button 
+                    @click="activeSection = item.id"
+                    class="w-full flex items-center p-3 rounded-xl transition-all relative group"
+                    :class="[
+                        sidebarExpanded ? 'justify-start px-4' : 'justify-center',
+                        activeSection === item.id ? 'bg-slate-800/70 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800/40 hover:text-white'
+                    ]"
+                    :title="item.name"
+                >
+                    <!-- Active Indicator -->
+                    <div x-show="activeSection === item.id" class="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-brand-primary"></div>
+                    
+                    <i class="ph text-2xl shrink-0" :class="[item.icon, activeSection === item.id ? 'text-brand-primary' : 'text-slate-400 group-hover:text-white']"></i>
+                    
+                    <span class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-200"
+                          :class="sidebarExpanded ? 'opacity-100 inline' : 'opacity-0 w-0 ml-0 hidden'">
+                        <span x-text="item.name"></span>
+                    </span>
+                </button>
+            </template>
+        </nav>
+
+        <!-- Stats miniature in sidebar -->
+        <div class="w-full px-4 mt-auto">
+            <div class="glass p-3 rounded-xl flex items-center overflow-hidden transition-all" 
+                 :class="sidebarExpanded ? 'opacity-100' : 'opacity-0 h-0 p-0 overflow-hidden'">
+                <div class="flex flex-col">
+                    <span class="text-xs text-brand-textMuted uppercase tracking-wider">Learned</span>
+                    <div class="flex items-baseline mt-1">
+                        <span class="text-lg font-semibold text-brand-primary" x-text="stats.unique_characters"></span>
+                        <span class="text-xs text-brand-textMuted ml-1">chars</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative transition-all"
+          :class="settingsOpen ? 'mr-[300px]' : ''">
+        
+        <!-- Topbar -->
+        <header class="h-16 flex items-center justify-between px-8 shrink-0">
+            <h1 class="text-xl font-medium tracking-tight" x-text="navItems.find(i => i.id === activeSection)?.name"></h1>
+            
+            <button @click="settingsOpen = !settingsOpen" class="w-10 h-10 rounded-full glass flex items-center justify-center text-brand-textMuted hover:text-white transition-colors">
+                <i class="ph ph-sliders-horizontal text-lg"></i>
+            </button>
+        </header>
+
+        <!-- Dynamic Content -->
+        <div class="flex-1 overflow-y-auto overflow-x-hidden p-6 pt-2 pb-24">
+            
+            <!-- SECTION: STUDIO -->
+            <div x-show="activeSection === 'studio'" class="h-full flex gap-6" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                
+                <!-- Left: Editor -->
+                <div class="flex-1 flex flex-col glass rounded-2xl overflow-hidden border border-slate-700/50">
+                    <div class="h-10 bg-slate-800/40 border-b border-slate-700/50 flex items-center px-4">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                            <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                        </div>
+                        <span class="ml-4 text-xs font-mono text-brand-textMuted">input.txt</span>
+                    </div>
+                    <div class="flex-1 relative flex">
+                        <!-- Line Numbers (fake) -->
+                        <div class="w-10 bg-slate-900/30 border-r border-slate-700/30 flex flex-col items-center py-4 font-mono text-xs text-slate-500 user-select-none">
+                            <template x-for="i in 20">
+                                <span class="leading-6" x-text="i"></span>
+                            </template>
+                        </div>
+                        <textarea 
+                            x-model="assignmentText"
+                            class="flex-1 bg-transparent resize-none outline-none p-4 font-mono text-sm leading-6 text-brand-textPrimary whitespace-pre-wrap"
+                            placeholder="Type your assignment text here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Right: Paper Preview -->
+                <div class="flex-[1.2] flex items-center justify-center bg-slate-900/20 rounded-2xl border border-slate-800/50 p-6 relative overflow-hidden group">
+                    <!-- The Paper -->
+                    <div class="paper-sheet aspect-[1/1.414] w-full max-w-[550px] max-h-[780px] flex items-center justify-center text-slate-400 transition-all duration-300 overflow-hidden bg-white shadow-2xl rounded-sm">
+                        <template x-if="!pdfUrl && !isGenerating">
+                            <div class="flex flex-col items-center p-8 text-center">
+                                <i class="ph ph-file-text text-5xl mb-3 text-slate-300"></i>
+                                <span class="text-sm font-medium text-slate-500">Your handwritten assignment will appear here</span>
+                                <span class="text-xs text-slate-400 mt-1">Click "Generate Assignment" below to render</span>
+                            </div>
+                        </template>
+                        <template x-if="isGenerating">
+                            <div class="flex flex-col items-center p-8 text-center">
+                                <i class="ph-duotone ph-spinner-gap animate-spin text-5xl text-brand-primary mb-3"></i>
+                                <span class="text-sm font-medium text-slate-600">Simulating handwritten strokes & CamScanner shader...</span>
+                            </div>
+                        </template>
+                        <template x-if="pdfUrl && !isGenerating && previewPages.length > 0">
+                            <img :src="previewPages[currentPage]" class="w-full h-full object-contain" alt="Rendered Assignment Page">
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECTION: TRAIN ON NOTES -->
+            <div x-show="activeSection === 'train'" class="h-full flex flex-col gap-6" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                <input type="file" id="notesFileInput" multiple accept="image/*" class="hidden" @change="handleFileUpload($event)">
+                <div class="glass border-dashed border-2 border-slate-600 rounded-2xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-primary transition-colors hover:bg-slate-800/40"
+                     @click="document.getElementById('notesFileInput').click()"
+                     :class="isUploading ? 'dashed-border-animated border-transparent' : ''">
+                    <i class="ph-duotone ph-upload-simple text-4xl text-brand-primary mb-4" :class="isUploading ? 'animate-bounce' : ''"></i>
+                    <h3 class="text-lg font-medium text-white mb-2">Upload CamScanner Note Photos</h3>
+                    <p class="text-sm text-brand-textMuted max-w-md">Click or drag & drop 1 to 5 scanned note pages. The system automatically normalizes lighting, strips paper backgrounds, and extracts characters.</p>
+                </div>
+
+                <div class="flex-1 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-sm font-medium text-brand-textMuted">Uploaded Pages & Processing Queue</h4>
+                        <button @click="extractAll()" :disabled="isExtracting" class="text-xs bg-gradient-to-r from-brand-primary to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-semibold px-4 py-2 rounded-lg shadow-glow flex items-center gap-2 transition-all disabled:opacity-50">
+                            <i class="ph-bold ph-lightning" :class="isExtracting ? 'animate-spin' : ''"></i>
+                            <span x-text="isExtracting ? 'Extracting All Pages...' : '⚡ Extract All Pages (Auto-Learn)'"></span>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <template x-for="(page, pIdx) in uploadedPages" :key="pIdx">
+                            <div class="glass p-4 rounded-xl flex flex-col gap-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-mono text-slate-400" x-text="'Page #' + (page.index + 1)"></span>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-brand-success/20 text-brand-success">Preprocessed</span>
+                                </div>
+                                <div class="flex gap-2 h-44">
+                                    <div class="flex-1 bg-slate-900 rounded overflow-hidden flex items-center justify-center border border-slate-700/50">
+                                        <img :src="page.original_url" class="max-h-full max-w-full object-contain" alt="Original Scan">
+                                    </div>
+                                    <div class="flex-1 bg-slate-900 rounded overflow-hidden flex items-center justify-center border border-slate-700/50">
+                                        <img :src="page.processed_url" class="max-h-full max-w-full object-contain" alt="Ink Mask">
+                                    </div>
+                                </div>
+                                <input type="text" :id="'hint_' + page.index" placeholder="Optional: transcription hint or pangram snippet" class="bg-slate-900/60 border border-slate-700/60 rounded px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-brand-primary">
+                                <div class="flex justify-between items-center mt-1">
+                                    <span class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-300" x-text="page.lines_detected + ' lines detected'"></span>
+                                    <button @click="extractGlyphs(page.index)" :disabled="isExtracting" class="text-xs bg-brand-primary hover:bg-indigo-400 text-white px-3 py-1.5 rounded font-medium transition-colors disabled:opacity-50">
+                                        <span x-text="isExtracting ? 'Extracting...' : 'Extract & Register Glyphs'"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <template x-if="uploadedPages.length === 0">
+                        <div class="text-center py-12 text-slate-500 text-sm">
+                            No note pages uploaded yet. Drop photos above to start training!
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- SECTION: GLYPH LIBRARY -->
+            <div x-show="activeSection === 'glyphs'" class="h-full flex flex-col gap-6" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                <div class="glass p-2 rounded-xl flex items-center px-4 w-full max-w-md mx-auto">
+                    <i class="ph ph-magnifying-glass text-brand-textMuted text-lg"></i>
+                    <input type="text" x-model="glyphSearch" placeholder="Search character (e.g. a, B, 3)..." class="bg-transparent border-none outline-none text-sm p-2 w-full text-white placeholder-slate-500">
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 overflow-y-auto pb-8">
+                    <template x-for="[char, variants] in Object.entries(filteredGlyphs)" :key="char">
+                        <div class="glass rounded-xl p-4 flex flex-col items-center group cursor-pointer hover:border-brand-primary/50 transition-colors">
+                            <span class="text-3xl font-serif text-white mb-2" x-text="char"></span>
+                            <div class="flex gap-1 mb-2 max-w-full overflow-hidden justify-center">
+                                <template x-for="v in variants.slice(0, 3)" :key="v.variant_id">
+                                    <img :src="v.url" class="w-7 h-7 object-contain bg-slate-800 rounded p-0.5 border border-slate-700" :title="'Variant ' + v.variant_id">
+                                </template>
+                            </div>
+                            <span class="text-[10px] text-brand-textMuted bg-slate-800/80 px-2 py-0.5 rounded-full" x-text="variants.length + ' var' + (variants.length > 1 ? 's' : '')"></span>
+                        </div>
+                    </template>
+                </div>
+                <template x-if="Object.keys(filteredGlyphs).length === 0">
+                    <div class="text-center py-16 text-slate-500 text-sm">
+                        No glyphs registered yet. Upload your handwritten notes in "Train on Notes" to extract your characters!
+                    </div>
+                </template>
+            </div>
+
+            <!-- SECTION: MODELS -->
+            <div x-show="activeSection === 'models'" class="h-full flex gap-6 justify-center items-start pt-10" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                <template x-for="(model, index) in modelTiers" :key="index">
+                    <div class="glass rounded-2xl p-6 w-[280px] flex flex-col relative overflow-hidden"
+                         :class="model.status === 'active' ? 'border-brand-primary/50 shadow-glow' : ''">
+                        
+                        <div x-show="model.status === 'active'" class="absolute top-0 inset-x-0 h-1 bg-brand-primary"></div>
+                        
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center">
+                                <i class="ph text-xl text-white" :class="model.icon"></i>
+                            </div>
+                            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded"
+                                  :class="{
+                                      'bg-brand-success/20 text-brand-success': model.status === 'active',
+                                      'bg-brand-secondary/20 text-brand-secondary': model.status === 'checking...',
+                                      'bg-slate-800 text-slate-400': model.status === 'unavailable'
+                                  }" x-text="model.status">
+                            </span>
+                        </div>
+                        <span class="text-xs text-brand-primary font-mono mb-1" x-text="`TIER ${3 - index}`"></span>
+                        <h3 class="text-lg font-medium text-white mb-2" x-text="model.name"></h3>
+                        <p class="text-sm text-brand-textMuted leading-relaxed" x-text="model.description"></p>
+                        <p class="text-xs text-brand-primary/80 mt-2 font-mono" x-text="model.details || ''"></p>
+                        
+                        <template x-if="model.name.includes('VATr')">
+                            <button @click="trainNeuralModel()" :disabled="isTrainingNeural" class="mt-4 w-full bg-gradient-to-r from-brand-primary to-purple-600 hover:opacity-90 text-white font-semibold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-glow transition-all disabled:opacity-50">
+                                <i class="ph-bold ph-lightning" :class="isTrainingNeural ? 'animate-spin' : ''"></i>
+                                <span x-text="isTrainingNeural ? 'Training on GPU...' : (model.status === 'active' ? '⚡ Retrain on RTX 3070' : '⚡ Train on RTX 3070')"></span>
+                            </button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+        </div>
+
+        <!-- Floating Bottom Toolbar (Only in Studio) -->
+        <div x-show="activeSection === 'studio'" class="absolute bottom-6 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl z-10"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8" x-transition:enter-end="opacity-100 translate-y-0">
+            
+            <button @click="currentPage = Math.max(0, currentPage - 1)" :disabled="currentPage <= 0" class="text-slate-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="Previous Page">
+                <i class="ph-bold ph-caret-left"></i>
+            </button>
+            <span class="text-sm font-medium text-slate-300" x-text="'Page ' + (previewPages.length ? (currentPage + 1) : 1) + ' of ' + (previewPages.length || 1)"></span>
+            <button @click="currentPage = Math.min(previewPages.length - 1, currentPage + 1)" :disabled="currentPage >= previewPages.length - 1" class="text-slate-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="Next Page">
+                <i class="ph-bold ph-caret-right"></i>
+            </button>
+
+            <div class="w-[1px] h-6 bg-slate-700"></div>
+
+            <button @click="downloadPdf" :disabled="!pdfUrl" class="text-sm font-medium transition-colors flex items-center gap-2" :class="pdfUrl ? 'text-slate-200 hover:text-white cursor-pointer' : 'text-slate-500 cursor-not-allowed'">
+                <i class="ph ph-download-simple text-lg"></i>
+                <span>Download PDF</span>
+            </button>
+
+            <button @click="generateAssignment" :disabled="isGenerating" class="bg-gradient-to-r from-brand-primary to-purple-500 text-white text-sm font-medium px-5 py-2 rounded-full shadow-glow flex items-center gap-2 border border-white/10 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all disabled:opacity-50">
+                <i class="ph-bold ph-magic-wand" :class="isGenerating ? 'animate-spin' : ''"></i>
+                <span x-text="isGenerating ? 'Synthesizing...' : 'Generate Assignment'"></span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Right Settings Panel -->
+    <aside 
+        class="fixed right-0 top-0 bottom-0 w-[300px] glass border-l border-slate-800 flex flex-col transition-transform duration-300 z-30"
+        :class="settingsOpen ? 'translate-x-0' : 'translate-x-full'">
+        
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800 shrink-0">
+            <h2 class="text-sm font-medium text-white flex items-center gap-2">
+                <i class="ph ph-faders"></i> Output Settings
+            </h2>
+            <button @click="settingsOpen = false" class="text-slate-500 hover:text-white transition-colors">
+                <i class="ph ph-x"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-8">
+            
+            <!-- Ink Type -->
+            <div>
+                <label class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-3 block">Ink Style</label>
+                <div class="flex gap-3">
+                    <template x-for="ink in ['Royal Blue', 'Classic Black', 'Gel Dark']">
+                        <button class="w-8 h-8 rounded-full border-2 transition-all relative"
+                                :class="inkType === ink ? 'border-white scale-110' : 'border-transparent hover:scale-105'"
+                                :style="`background-color: ${ink === 'Royal Blue' ? '#2563eb' : ink === 'Classic Black' ? '#1e293b' : '#1e3a8a'};`"
+                                @click="inkType = ink"
+                                :title="ink">
+                            <i x-show="inkType === ink" class="ph-bold ph-check text-white text-xs absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+                        </button>
+                    </template>
+                </div>
+                <div class="mt-2 text-sm text-slate-300" x-text="inkType"></div>
+            </div>
+
+            <!-- Motor Realism -->
+            <div class="space-y-5">
+                <label class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider flex items-center gap-2">
+                    <i class="ph ph-brain"></i> Motor Realism
+                </label>
+                
+                <div>
+                    <div class="flex justify-between text-xs mb-2">
+                        <span class="text-slate-400">Baseline Slant</span>
+                        <span class="text-brand-primary" x-text="baselineSlant"></span>
+                    </div>
+                    <input type="range" x-model="baselineSlant" min="0" max="1" step="0.1">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs mb-2">
+                        <span class="text-slate-400">Margin Drift</span>
+                        <span class="text-brand-primary" x-text="marginDrift + 'px'"></span>
+                    </div>
+                    <input type="range" x-model="marginDrift" min="0" max="30" step="1">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs mb-2">
+                        <span class="text-slate-400">Line Spacing</span>
+                        <span class="text-brand-primary" x-text="lineSpacing + '%'"></span>
+                    </div>
+                    <input type="range" x-model="lineSpacing" min="80" max="150" step="5">
+                </div>
+            </div>
+
+            <!-- CamScanner Effect -->
+            <div class="space-y-5">
+                <label class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider flex items-center gap-2">
+                    <i class="ph ph-camera"></i> Camera Artifacts
+                </label>
+                
+                <div>
+                    <div class="flex justify-between text-xs mb-2">
+                        <span class="text-slate-400">Scan Intensity</span>
+                        <span class="text-brand-primary" x-text="camscannerIntensity"></span>
+                    </div>
+                    <input type="range" x-model="camscannerIntensity" min="0" max="1" step="0.05">
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Stats Bottom -->
+        <div class="p-6 bg-slate-900/50 border-t border-slate-800">
+            <div class="flex justify-between items-end">
+                <div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Total Variants</div>
+                    <div class="text-2xl font-mono text-white" x-text="stats.total_variants">0</div>
+                </div>
+                <i class="ph-duotone ph-database text-2xl text-slate-600"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Toast Notifications -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div class="glass px-4 py-3 rounded-lg flex items-center gap-3 shadow-lg pointer-events-auto"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-x-8"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0">
+                <i :class="toast.type === 'success' ? 'ph-fill ph-check-circle text-brand-success' : 'ph-fill ph-info text-brand-primary'"></i>
+                <span class="text-sm font-medium text-white" x-text="toast.message"></span>
+            </div>
+        </template>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                activeSection: 'studio',
+                sidebarExpanded: false,
+                settingsOpen: true,
+                
+                // Settings
+                inkType: 'Royal Blue Ballpoint',
+                baselineSlant: 0.4,
+                marginDrift: 12,
+                lineSpacing: 95,
+                camscannerIntensity: 0.85,
+                
+                // Studio
+                assignmentText: `# Political Science Assignment: Modern State & Authority
+Name: Alex Mercer
+Student ID: POL-2026-9041
+
+1. Origin of Modern State Authority
+→ Political authority and the idea of modern state came from organized institutions.
+→ Early days of power was fragmented across territories.
+→ In reality, legitimacy is not an abstract concept.
+→ It is the practical effect of a state demonstrating that no alternative center of violence can challenge it.
+
+2. Social Contract Theory
+→ Social contract theory explains why citizens agree to accept political authority.
+→ Citizens collectively form a contract and establish a governing body.
+→ State is fundamentally a product of political struggle and governance.`,
+                previewPages: [],
+                currentPage: 0,
+                isGenerating: false,
+                isTrainingNeural: false,
+                pdfUrl: null,
+                
+                // Training
+                isUploading: false,
+                
+                // Glyph Library
+                glyphSearch: '',
+                
+                // Stats
+                // Stats
+                stats: { unique_characters: 0, total_variants: 0, characters: [] },
+                
+                // Models
+                modelTiers: [
+                    { name: 'Procedural Engine', description: 'Multi-variant glyph compositing with organic motor drift.', status: 'active', icon: 'ph-bezier-curve' },
+                    { name: 'Surya OCR', description: 'Deep learning handwriting recognition for auto-labeling.', status: 'checking...', icon: 'ph-scan' },
+                    { name: 'VATr Neural Synthesis', description: 'Visual Appearance Transformer for style-conditioned generation.', status: 'checking...', icon: 'ph-brain' },
+                ],
+                
+                // Toasts
+                toasts: [],
+                toastIdCounter: 0,
+
+                // Training extras
+                uploadedPages: [],
+                sessionId: null,
+                isExtracting: false,
+                glyphs: {},
+
+                // Navigation definition
+                navItems: [
+                    { id: 'studio', name: 'Assignment Studio', icon: 'ph-pen' },
+                    { id: 'train', name: 'Train on Notes', icon: 'ph-upload-simple' },
+                    { id: 'glyphs', name: 'Glyph Library', icon: 'ph-text-aa' },
+                    { id: 'models', name: 'AI Models', icon: 'ph-cpu' },
+                ],
+
+                async init() {
+                    await this.fetchStats();
+                    await this.fetchModelStatus();
+                    await this.fetchGlyphs();
+                },
+
+                async fetchStats() {
+                    try {
+                        const res = await fetch('/api/stats');
+                        if (res.ok) this.stats = await res.json();
+                    } catch(e) { console.warn('Stats fetch failed:', e); }
+                },
+
+                async fetchModelStatus() {
+                    try {
+                        const res = await fetch('/api/model-status');
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.modelTiers = data.tiers.map(t => ({
+                                name: t.name,
+                                description: t.description,
+                                status: t.status,
+                                details: t.details || '',
+                                icon: t.tier === 1 ? 'ph-brain' : (t.tier === 2 ? 'ph-scan' : 'ph-bezier-curve')
+                            }));
+                        }
+                    } catch(e) { console.warn('Model status failed:', e); }
+                },
+
+                async fetchGlyphs() {
+                    try {
+                        const res = await fetch('/api/glyphs');
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.glyphs = data.characters || {};
+                        }
+                    } catch(e) {}
+                },
+
+                get filteredGlyphs() {
+                    if (!this.glyphSearch) return this.glyphs;
+                    const q = this.glyphSearch.toLowerCase();
+                    const filtered = {};
+                    for (const [ch, variants] of Object.entries(this.glyphs)) {
+                        if (ch.toLowerCase().includes(q)) filtered[ch] = variants;
+                    }
+                    return filtered;
+                },
+
+                async triggerUpload() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.multiple = true;
+                    input.accept = 'image/*';
+                    input.onchange = async (e) => {
+                        await this.handleFileUpload(e);
+                    };
+                    input.click();
+                },
+
+                async handleFileUpload(event) {
+                    const files = event.target?.files || event.dataTransfer?.files;
+                    if (!files || files.length === 0) return;
+                    
+                    this.isUploading = true;
+                    const formData = new FormData();
+                    for (const f of files) formData.append('files', f);
+
+                    try {
+                        const res = await fetch('/api/upload-notes', { method: 'POST', body: formData });
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.sessionId = data.session_id;
+                            this.uploadedPages = data.pages;
+                            const totalLines = data.pages.reduce((s, p) => s + p.lines_detected, 0);
+                            this.addToast(`Processed ${data.pages.length} page(s) — ${totalLines} lines detected.`, 'success');
+                        } else {
+                            this.addToast('Upload failed. Check file format.', 'error');
+                        }
+                    } catch(e) {
+                        this.addToast('Upload error: ' + e.message, 'error');
+                    }
+                    this.isUploading = false;
+                },
+
+                async extractGlyphs(pageIndex) {
+                    this.isExtracting = true;
+                    const hintEl = document.getElementById('hint_' + pageIndex);
+                    const hint = hintEl ? hintEl.value : '';
+
+                    try {
+                        const res = await fetch('/api/extract', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ page_index: pageIndex, transcript_hint: hint || null })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.stats = data.stats;
+                            this.addToast(`Registered ${data.registered_count} glyphs! Total: ${data.stats.unique_characters} chars, ${data.stats.total_variants} variants.`, 'success');
+                            await this.fetchGlyphs();
+                        } else {
+                            this.addToast('Extraction failed.', 'error');
+                        }
+                    } catch(e) {
+                        this.addToast('Extract error: ' + e.message, 'error');
+                    }
+                    this.isExtracting = false;
+                },
+
+                async extractAll() {
+                    this.isExtracting = true;
+                    try {
+                        const res = await fetch('/api/extract-all', { method: 'POST' });
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.stats = data.stats;
+                            this.addToast(`Batch learned ${data.total_extracted} glyphs! Total: ${data.stats.unique_characters} chars, ${data.stats.total_variants} variants.`, 'success');
+                            await this.fetchGlyphs();
+                        } else {
+                            this.addToast('Batch extraction failed.', 'error');
+                        }
+                    } catch(e) {
+                        this.addToast('Error: ' + e.message, 'error');
+                    }
+                    this.isExtracting = false;
+                },
+
+                async trainNeuralModel() {
+                    this.isTrainingNeural = true;
+                    this.addToast('Started neural training on NVIDIA RTX 3070 GPU...', 'info');
+                    try {
+                        const res = await fetch('/api/train-neural', { method: 'POST' });
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.addToast('VATr model trained successfully on GPU! Tier 1 is now active.', 'success');
+                            await this.fetchModelStatus();
+                        } else {
+                            this.addToast('GPU training failed.', 'error');
+                        }
+                    } catch(e) {
+                        this.addToast('Training error: ' + e.message, 'error');
+                    }
+                    this.isTrainingNeural = false;
+                },
+
+                async generateAssignment() {
+                    if (!this.assignmentText.trim()) return;
+                    
+                    this.isGenerating = true;
+                    this.pdfUrl = null;
+                    this.previewPages = [];
+
+                    try {
+                        const res = await fetch('/api/generate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                text: this.assignmentText,
+                                ink_type: this.inkType,
+                                baseline_slant: this.baselineSlant,
+                                margin_drift: this.marginDrift,
+                                line_spacing: this.lineSpacing,
+                                camscanner_intensity: this.camscannerIntensity
+                            })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.previewPages = data.preview_urls;
+                            this.currentPage = 0;
+                            this.pdfUrl = data.pdf_url;
+                            this.addToast(`Generated ${data.page_count} page(s) successfully!`, 'success');
+                        } else {
+                            const err = await res.json().catch(() => ({}));
+                            this.addToast('Generation failed: ' + (err.detail || 'Unknown error'), 'error');
+                        }
+                    } catch(e) {
+                        this.addToast('Generation error: ' + e.message, 'error');
+                    }
+                    this.isGenerating = false;
+                },
+
+                downloadPdf() {
+                    if (this.pdfUrl) {
+                        const a = document.createElement('a');
+                        a.href = this.pdfUrl;
+                        a.download = 'Handwritten_Assignment.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                    }
+                },
+
+                handleDrop(event) {
+                    event.preventDefault();
+                    this.handleFileUpload(event);
+                },
+
+                addToast(message, type = 'info') {
+                    const id = this.toastIdCounter++;
+                    this.toasts.push({ id, message, type });
+                    setTimeout(() => {
+                        this.toasts = this.toasts.filter(t => t.id !== id);
+                    }, 4000);
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
