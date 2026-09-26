@@ -28,6 +28,7 @@ from engine.compositor import CamScannerCompositor
 from engine.pdf_builder import AssignmentPDFBuilder
 from engine.surya_reader import HandwritingReader
 from engine.vatr_synthesizer import HandwritingSynthesizer
+from engine.validator import validate_text_coverage, get_required_characters, MissingCharactersError
 
 # ──────────────────────────────────────────────────────────────────────
 # Setup
@@ -70,6 +71,9 @@ class GenerateRequest(BaseModel):
 class ExtractRequest(BaseModel):
     page_index: int
     transcript_hint: Optional[str] = None
+
+class ValidateTextRequest(BaseModel):
+    text: str
 
 # ──────────────────────────────────────────────────────────────────────
 # Static Files & SPA
@@ -289,18 +293,54 @@ async def train_neural_model():
         raise HTTPException(status_code=500, detail=str(e))
 
 # ──────────────────────────────────────────────────────────────────────
-# API: Generate Assignment
+# API: Validation & Generation
 # ──────────────────────────────────────────────────────────────────────
+
+@app.post("/api/validate-text")
+async def validate_text(req: ValidateTextRequest):
+    """
+    Validates character coverage of the requested text against the scanned glyph bank.
+    Returns real-time status, missing characters, and coverage percentage.
+    """
+    extractor._load_index()
+    is_valid, missing, available, coverage_pct = validate_text_coverage(req.text, extractor.index)
+    req_chars = get_required_characters(req.text)
+    return {
+        "valid": is_valid,
+        "missing_characters": missing,
+        "available_characters": available,
+        "coverage_pct": coverage_pct,
+        "total_required": len(req_chars),
+        "total_available": len(available)
+    }
 
 @app.post("/api/generate")
 async def generate_assignment(req: GenerateRequest):
     global _rendered_pages, _last_pdf_path
 
     try:
+        extractor._load_index()
+
+        # Step 1: Strict Character Coverage Validation
+        is_valid, missing, avail, pct = validate_text_coverage(req.text, extractor.index)
+        if not is_valid:
+            chars_str = ", ".join(repr(c) for c in missing)
+            logger.warning(f"Generation strictly blocked: missing un-scanned characters: {missing}")
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "missing_characters",
+                    "message": f"Cannot generate assignment: The following characters have not been scanned and understood yet: [{chars_str}]. Please scan notes containing these characters first.",
+                    "missing_characters": missing,
+                    "available_count": len(avail),
+                    "coverage_pct": pct
+                }
+            )
+
         layout = UnruledPageLayout(
             glyph_bank=extractor.index,
             synthesizer=synthesizer,
-            words_index_path="data/words/words_index.json"
+            words_index_path=None
         )
 
         pages_data = layout.layout_document(
@@ -335,6 +375,17 @@ async def generate_assignment(req: GenerateRequest):
             "pdf_url": "/api/download"
         }
 
+    except MissingCharactersError as e:
+        logger.warning(f"Generation blocked by MissingCharactersError: {e}")
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "missing_characters",
+                "message": str(e),
+                "missing_characters": e.missing_characters,
+                "available_count": e.available_count
+            }
+        )
     except Exception as e:
         logger.error(f"Generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))

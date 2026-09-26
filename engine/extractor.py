@@ -112,8 +112,16 @@ class GlyphExtractor:
 
     def register_glyph(self, char_label, glyph_crop_binary, metadata=None):
         """
-        Saves a glyph variation to disk with a transparent PNG background and records in index.
+        Saves a verified glyph variation to disk with a transparent PNG background and records in index.
+        Rejects noise specks and invalid crops.
         """
+        if glyph_crop_binary is None or len(glyph_crop_binary.shape) < 2:
+            return None
+
+        h, w = glyph_crop_binary.shape
+        if w < 4 or h < 6 or (w * h < 24) or np.count_nonzero(glyph_crop_binary) == 0:
+            return None
+
         char_dir = os.path.join(self.glyphs_dir, f"char_{ord(char_label) if len(char_label) == 1 else 'bigram_' + char_label}")
         os.makedirs(char_dir, exist_ok=True)
         
@@ -125,7 +133,6 @@ class GlyphExtractor:
         filepath = os.path.join(char_dir, filename)
         
         # Convert binary crop (white on black) to transparent RGBA (black ink on transparent)
-        h, w = glyph_crop_binary.shape
         rgba = np.zeros((h, w, 4), dtype=np.uint8)
         rgba[:, :, 0] = 30   # Default dark ink R
         rgba[:, :, 1] = 30   # Default dark ink G
@@ -150,10 +157,14 @@ class GlyphExtractor:
 
     def get_stats(self):
         """Returns statistics on current glyph coverage."""
-        total_chars = len(self.index)
-        total_variants = sum(len(v) for v in self.index.values())
+        valid_chars = {c: [v for v in vars if v.get("path") and os.path.exists(v["path"])]
+                       for c, vars in self.index.items()}
+        valid_chars = {c: vars for c, vars in valid_chars.items() if len(vars) > 0}
+        total_chars = len(valid_chars)
+        total_variants = sum(len(v) for v in valid_chars.values())
         return {
             "unique_characters": total_chars,
             "total_variants": total_variants,
-            "characters": sorted(list(self.index.keys()))
+            "characters": sorted(list(valid_chars.keys()))
         }
+

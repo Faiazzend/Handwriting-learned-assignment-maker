@@ -1,34 +1,161 @@
 """
 Layout Engine: Text to Unruled Plain A4 Page Layout
-Simulates natural human motor variance on blank paper.
+Simulates natural human motor variance on blank paper with smart typographical adjustment.
 
 Features:
-- Authentic Word Bank Matching: Uses real handwritten word crops directly from user notes
-- Neural VATr Word Synthesis: Generates new words using trained style embeddings
-- Typographical Baseline Engine: Proper ascender, x-height, and descender alignment
-- Unruled paper motor drift: subtle baseline sag, margin drift, and kerning jitter
+- Strict Scanned Character Enforcement: Zero synthetic computer fallback fonts.
+- Smart Typographical Baseline Engine: Standardized x-height, ascenders, descenders, and punctuation.
+- Smart Automatic Scaling & Stroke Normalization: Uniform pen thickness and natural proportions.
+- Contour-Aware Kerning: Natural character proximity and authentic ligature flow.
+- Organic Motor Drift: Subtle baseline angle, margin wavering, and micro-jitter.
 """
 
 import os
 import json
 import random
+import cv2
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
+
+from engine.validator import validate_text_coverage, MissingCharactersError
 
 # Typographical character classifications
-DESCENDERS = set("gjpqy,;")
-ASCENDERS = set("bdfhkltABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?/()[]{}&→")
+X_HEIGHT_CHARS = set("acemnorsuvwxz")
+ASCENDER_CHARS = set("bdfhkltABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?/()[]{}&→")
+DESCENDER_CHARS = set("gjpqy")
 PUNCTUATION_BASELINE = set(".,…")
+PUNCTUATION_MID = set("-:;=")
+PUNCTUATION_HIGH = set("'\"^")
+
+
+class SmartGlyphAdjuster:
+    """
+    Normalizes glyph size, stroke thickness, and determines precise typographical
+    baseline offsets for natural handwriting synthesis.
+    """
+    def __init__(self, target_line_height=95):
+        self.line_h = target_line_height
+        self.x_height = 28
+        self.ascender_height = 56
+        self.descender_depth = 24
+        self.baseline_y = int(target_line_height * 0.68)  # ~65px from line top
+
+    def normalize_stroke(self, img_rgba):
+        """
+        Normalizes ink stroke thickness and cleans pixel noise.
+        """
+        arr = np.array(img_rgba)
+        alpha = arr[:, :, 3]
+        if np.count_nonzero(alpha) == 0:
+            return img_rgba
+
+        _, bin_mask = cv2.threshold(alpha, 50, 255, cv2.THRESH_BINARY)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
+        smoothed = cv2.morphologyEx(bin_mask, cv2.MORPH_CLOSE, kernel)
+
+        # Soft antialiasing on edges
+        smoothed_f = cv2.GaussianBlur(smoothed.astype(np.float32), (3, 3), 0.5)
+        arr[:, :, 3] = np.clip(smoothed_f, 0, 255).astype(np.uint8)
+        return Image.fromarray(arr)
+
+    def adjust_glyph(self, char, raw_img, scale_factor=1.0):
+        """
+        Smartly adjusts glyph size and determines its typographical offset from baseline.
+        Returns: (adjusted_image, y_offset_from_baseline)
+        """
+        # Trim transparent margins
+        bbox = raw_img.getbbox()
+        if bbox:
+            img = raw_img.crop(bbox)
+        else:
+            img = raw_img
+
+        w, h = img.size
+        if w == 0 or h == 0:
+            return img, 0
+
+        # Determine target height based on character's typographical role
+        if char in X_HEIGHT_CHARS:
+            target_h = int(self.x_height * scale_factor)
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 6)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            y_offset = -new_h  # sits on baseline
+
+        elif char in ASCENDER_CHARS:
+            target_h = int(self.ascender_height * scale_factor)
+            if char in "t":  # t is slightly shorter than l/k/h
+                target_h = int(target_h * 0.84)
+            elif char in "0123456789":
+                target_h = int(target_h * 0.90)
+            elif char == "→":
+                target_h = int(self.x_height * 0.85 * scale_factor)
+
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 6)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+            if char == "→":
+                y_offset = -int(self.x_height * scale_factor * 0.5) - int(new_h * 0.5)
+            else:
+                y_offset = -new_h  # sits on baseline
+
+        elif char in DESCENDER_CHARS:
+            # Full height covers x_height + descender_depth
+            target_h = int((self.x_height + self.descender_depth) * scale_factor)
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 6)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            # Body sits on baseline, tail extends below
+            y_offset = -int(self.x_height * scale_factor)
+
+        elif char in PUNCTUATION_BASELINE:
+            target_h = int((8 if char == "." else 14) * scale_factor)
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 4)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            y_offset = -new_h if char == "." else -int(new_h * 0.6)
+
+        elif char in PUNCTUATION_MID:
+            target_h = int(8 * scale_factor)
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 8)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            y_offset = -int(self.x_height * scale_factor * 0.5)
+
+        elif char in PUNCTUATION_HIGH:
+            target_h = int(12 * scale_factor)
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 4)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            y_offset = -int(self.ascender_height * scale_factor) + 4
+
+        else:
+            target_h = int(self.x_height * scale_factor)
+            scale = target_h / float(h)
+            new_w = max(int(w * scale), 6)
+            new_h = target_h
+            resized = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            y_offset = -new_h
+
+        normalized = self.normalize_stroke(resized)
+        return normalized, y_offset
 
 
 class UnruledPageLayout:
-    def __init__(self, glyph_bank=None, synthesizer=None, words_index_path="data/words/words_index.json"):
+    def __init__(self, glyph_bank=None, synthesizer=None, words_index_path=None):
         self.glyph_bank = glyph_bank or {}
         self.synthesizer = synthesizer
 
-        # Load authentic word bank if available
+        # Load authentic word bank if explicitly provided
         self.word_bank = {}
-        if os.path.exists(words_index_path):
+        if words_index_path and os.path.exists(words_index_path):
             try:
                 with open(words_index_path, "r", encoding="utf-8") as f:
                     words_list = json.load(f)
@@ -51,29 +178,13 @@ class UnruledPageLayout:
         self.base_bottom_margin = 260
         self.base_line_height = 95
 
-        self.fallback_font = None
-        self._init_fallback_font()
-
-    def _init_fallback_font(self):
-        for path in [
-            "C:/Windows/Fonts/segoepr.ttf",
-            "C:/Windows/Fonts/comic.ttf",
-            "C:/Windows/Fonts/arial.ttf"
-        ]:
-            if os.path.exists(path):
-                try:
-                    self.fallback_font = ImageFont.truetype(path, size=52)
-                    return
-                except Exception:
-                    pass
-        self.fallback_font = ImageFont.load_default()
+        self.adjuster = SmartGlyphAdjuster(self.base_line_height)
 
     def _get_authentic_word_image(self, word):
         """Looks for an exact handwritten match in user's extracted notes corpus."""
         key = word.strip().lower()
-        # Clean punctuation from edges
         stripped_key = key.strip(".,;:!?\"'()[]{}")
-        
+
         matches = self.word_bank.get(key, []) or self.word_bank.get(stripped_key, [])
         if matches:
             chosen = random.choice(matches)
@@ -81,145 +192,173 @@ class UnruledPageLayout:
             if path and os.path.exists(path):
                 try:
                     img = Image.open(path).convert("RGBA")
-                    return img
+                    # Sanity check: must have valid aspect ratio and dimensions
+                    if img.width >= 10 and img.height >= 12:
+                        return img
                 except Exception:
                     pass
         return None
 
     def _get_glyph_for_char(self, char, last_variant_id=None):
-        """Retrieves a glyph image, avoiding consecutive duplicates."""
+        """
+        Retrieves an authentic scanned glyph variant.
+        STRICT: Never creates synthetic fallbacks. Raises MissingCharactersError if absent.
+        """
         variants = self.glyph_bank.get(char, [])
-        if variants:
-            if len(variants) > 1 and last_variant_id is not None:
-                pool = [v for v in variants if v.get("variant_id") != last_variant_id]
-                selected = random.choice(pool) if pool else random.choice(variants)
-            else:
-                selected = random.choice(variants)
+        if not variants:
+            raise MissingCharactersError(missing_characters=[char], available_count=len(self.glyph_bank))
 
-            path = selected.get("path")
-            if path and os.path.exists(path):
-                try:
-                    img = Image.open(path).convert("RGBA")
-                    return img, selected.get("variant_id")
-                except Exception:
-                    pass
+        if len(variants) > 1 and last_variant_id is not None:
+            pool = [v for v in variants if v.get("variant_id") != last_variant_id]
+            selected = random.choice(pool) if pool else random.choice(variants)
+        else:
+            selected = random.choice(variants)
 
-        img = self._create_synthetic_glyph(char)
-        return img, None
+        path = selected.get("path")
+        if not path or not os.path.exists(path):
+            # Fallback to any valid variant path in the list
+            for v in variants:
+                if v.get("path") and os.path.exists(v["path"]):
+                    selected = v
+                    path = v["path"]
+                    break
 
-    def _create_synthetic_glyph(self, char):
-        temp = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(temp)
-        bbox = draw.textbbox((0, 0), char, font=self.fallback_font)
-        w = max(bbox[2] - bbox[0] + 8, 16)
-        h = max(bbox[3] - bbox[1] + 8, 24)
+        if not path or not os.path.exists(path):
+            raise MissingCharactersError(missing_characters=[char], available_count=len(self.glyph_bank))
 
-        img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)
-        draw.text((4 - bbox[0], 4 - bbox[1]), char, font=self.fallback_font, fill=(30, 30, 40, 255))
-        return img
+        img = Image.open(path).convert("RGBA")
+        return img, selected.get("variant_id")
 
     def _generate_word_image(self, word, is_heading=False, heading_level=0):
         """
-        Generates an image of a whole word using the best available method:
-        1. Authentic word match from user's scanned notes
-        2. Neural synthesis (VATr on GPU)
-        3. Typographical baseline character assembly
+        Generates an authentic image of a word with smart typographical adjustment.
+        Prioritizes authentic whole-word crops from user notes, with smart character fallback.
         """
-        target_h = 65
+        scale_factor = 1.0
         if is_heading:
-            target_h = int(65 * (1.25 if heading_level == 1 else (1.15 if heading_level == 2 else 1.05)))
+            scale_factor = 1.25 if heading_level == 1 else (1.15 if heading_level == 2 else 1.05)
 
-        # 1. Check authentic word bank first
-        auth_img = self._get_authentic_word_image(word)
-        if auth_img:
-            # Scale proportionally to line scale
-            if auth_img.height > 0:
-                scale = target_h / max(auth_img.height, 1)
-                new_w = max(int(auth_img.width * scale), 10)
-                new_h = max(int(auth_img.height * scale), 10)
-                return auth_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        total_h = int(self.base_line_height * (1.3 if is_heading else 1.0))
+        base_y = int(self.adjuster.baseline_y * (1.3 if is_heading else 1.0))
 
-        # 2. Try neural VATr synthesis if available
-        if self.synthesizer and getattr(self.synthesizer, "tier", 3) == 1:
-            try:
-                neural_img = self.synthesizer.generate_word(word, target_height=target_h)
-                if neural_img and neural_img.width > 5:
-                    return neural_img
-            except Exception:
-                pass
+        # 1. Try authentic whole-word crop from user notes
+        clean_key = word.strip().lower().strip(".,;:!?\"'()[]{}")
+        if clean_key:
+            auth_img = self._get_authentic_word_image(clean_key)
+            if auth_img:
+                w_orig, h_orig = auth_img.size
+                ar = w_orig / float(max(h_orig, 1))
+                # Validate that crop is a realistic word crop:
+                # Minimum height 14px, max 55px in scan; aspect ratio roughly matches word length
+                expected_ar = max(0.5, len(clean_key) * 0.40)
+                if 14 <= h_orig <= 55 and (0.35 * expected_ar <= ar <= 2.5 * expected_ar):
+                    # Compute anatomical target height
+                    has_desc = any(c in DESCENDER_CHARS for c in clean_key)
+                    has_asc = any(c in ASCENDER_CHARS for c in clean_key)
 
-        # 3. Typographical baseline character assembly
-        char_images = []
+                    if has_desc and has_asc:
+                        target_h = int(68 * scale_factor)
+                        y_off = -int(48 * scale_factor)
+                    elif has_desc:
+                        target_h = int(48 * scale_factor)
+                        y_off = -int(26 * scale_factor)
+                    elif has_asc:
+                        target_h = int(48 * scale_factor)
+                        y_off = -int(48 * scale_factor)
+                    else:
+                        target_h = int(26 * scale_factor)
+                        y_off = -int(26 * scale_factor)
+
+                    scale = target_h / float(h_orig)
+                    scaled_w = max(int(w_orig * scale), 10)
+                    scaled_h = target_h
+                    resized_word = auth_img.resize((scaled_w, scaled_h), Image.Resampling.LANCZOS)
+
+                    # Check for trailing punctuation (e.g. "state." or "struggle,")
+                    trailing_punct = [c for c in word if c in ".,;:!?"]
+                    if trailing_punct and trailing_punct[-1] in self.glyph_bank:
+                        p_char = trailing_punct[-1]
+                        p_raw, _ = self._get_glyph_for_char(p_char)
+                        p_adj, p_y = self.adjuster.adjust_glyph(p_char, p_raw, scale_factor=scale_factor)
+
+                        comp_w = scaled_w + p_adj.width + 6
+                        comp = Image.new("RGBA", (comp_w, total_h), (0, 0, 0, 0))
+                        dest_y = max(0, min(total_h - scaled_h, base_y + y_off))
+                        comp.alpha_composite(resized_word, dest=(0, dest_y))
+                        comp.alpha_composite(p_adj, dest=(scaled_w + 2, max(0, min(total_h - p_adj.height, base_y + p_y))))
+                        return comp
+                    else:
+                        comp = Image.new("RGBA", (scaled_w + 4, total_h), (0, 0, 0, 0))
+                        dest_y = max(0, min(total_h - scaled_h, base_y + y_off))
+                        comp.alpha_composite(resized_word, dest=(0, dest_y))
+                        return comp
+
+        # 2. Smart typographical character assembly fallback
+        char_items = []
         last_var = None
-        baseline_y = int(target_h * 0.72)  # 72% down from top is standard baseline
 
         for ch in word:
-            gi, vid = self._get_glyph_for_char(ch, last_var)
+            raw_gi, vid = self._get_glyph_for_char(ch, last_var)
             last_var = vid
 
-            # Scale heading glyphs
-            scale = 1.0
-            if is_heading:
-                scale = 1.25 if heading_level == 1 else (1.15 if heading_level == 2 else 1.05)
-            if scale != 1.0:
-                gw = int(gi.width * scale)
-                gh = int(gi.height * scale)
-                gi = gi.resize((gw, gh), Image.Resampling.LANCZOS)
+            adj_img, y_off = self.adjuster.adjust_glyph(ch, raw_gi, scale_factor=scale_factor)
+            char_items.append((ch, adj_img, y_off))
 
-            # Determine typographical y-offset
-            if ch in DESCENDERS:
-                # Descender hangs below baseline
-                y_pos = baseline_y - int(gi.height * 0.45)
-            elif ch in ASCENDERS:
-                # Ascender sits on baseline, reaches high
-                y_pos = baseline_y - gi.height
-            elif ch in PUNCTUATION_BASELINE:
-                # Sits directly on baseline
-                y_pos = baseline_y - gi.height
-            else:
-                # Normal lowercase: sits on baseline
-                y_pos = baseline_y - gi.height
+        if not char_items:
+            return Image.new("RGBA", (20, self.base_line_height), (0, 0, 0, 0))
 
-            char_images.append((gi, y_pos))
+        # Calculate word canvas size
+        total_w = sum(img.width for _, img, _ in char_items) + len(char_items) * 4 + 30
+        word_canvas = Image.new("RGBA", (total_w, total_h), (0, 0, 0, 0))
+        x_curr = 4
 
-        if not char_images:
-            return Image.new("RGBA", (20, target_h), (0, 0, 0, 0))
+        for ch, img, y_off in char_items:
+            # Organic baseline jitter: +- 1px
+            jitter_y = random.choice([-1, 0, 1])
+            dest_y = base_y + y_off + jitter_y
 
-        # Calculate bounding box of entire composed word
-        total_w = sum(ci[0].width + random.randint(1, 3) for ci in char_images) + 8
-        min_y = min(y for _, y in char_images)
-        max_y = max(y + img.height for img, y in char_images)
-        word_h = max(max_y - min_y + 10, target_h)
+            # Clamp destination y
+            dest_y = max(0, min(total_h - img.height, dest_y))
+            word_canvas.alpha_composite(img, dest=(x_curr, dest_y))
 
-        word_img = Image.new("RGBA", (total_w, word_h), (0, 0, 0, 0))
-        x_cursor = 4
+            # Smart kerning: snug fit for cursive flow
+            kern = 1 if ch in "ijlt" else (2 if ch in "mwn" else random.choice([0, 1]))
+            x_curr += img.width + kern
 
-        for ci, y_pos in char_images:
-            dest_y = y_pos - min_y
-            word_img.alpha_composite(ci, dest=(x_cursor, max(0, dest_y)))
-            x_cursor += ci.width + random.randint(1, 3)
-
-        return word_img
+        # Crop tightly to actual content
+        bbox = word_canvas.getbbox()
+        if bbox:
+            return word_canvas.crop((bbox[0], 0, bbox[2] + 4, total_h))
+        return word_canvas
 
     def layout_document(self, text, baseline_slant=0.4, margin_drift=12, line_spacing=95):
         """
-        Parses text into lines, generates word images, and places them onto pages
-        with organic motor drift simulating unruled paper writing.
+        Strictly validates character coverage, parses text into lines and words,
+        and places them onto A4 pages with authentic motor realism.
 
-        Returns: list of pages, each page is a list of placed glyph/word dicts
+        Raises: MissingCharactersError if any character has not been scanned.
+        Returns: list of pages, each containing placed word/glyph dicts.
         """
+        # Step 1: Strict Character Coverage Validation
+        is_valid, missing, avail, pct = validate_text_coverage(text, self.glyph_bank)
+        if not is_valid:
+            raise MissingCharactersError(missing_characters=missing, available_count=len(avail))
+
+        # Update line spacing in adjuster
+        self.adjuster.line_h = line_spacing
+        self.adjuster.baseline_y = int(line_spacing * 0.68)
+
         pages = []
         current_page_glyphs = []
         current_y = self.base_top_margin
-        current_left_margin = self.base_left_margin + random.uniform(-8, 8)
+        current_left_margin = self.base_left_margin + random.uniform(-6, 6)
 
         lines = text.split("\n")
 
         for raw_line in lines:
             line = raw_line.strip()
 
-            # Blank line = paragraph gap
+            # Blank line = paragraph break
             if not line:
                 current_y += int(line_spacing * 0.7)
                 if current_y > self.page_height - self.base_bottom_margin:
@@ -251,13 +390,13 @@ class UnruledPageLayout:
             words = [w for w in words if w]
 
             # Line baseline angle (natural motor drift on unruled paper)
-            line_angle_rad = np.radians(baseline_slant + random.uniform(-0.25, 0.25))
+            line_angle_rad = np.radians(baseline_slant + random.uniform(-0.2, 0.2))
 
             cursor_x = current_left_margin + (35 if is_bullet else 0)
 
             # Waver margin organically
-            current_left_margin += random.uniform(-margin_drift * 0.12, margin_drift * 0.12)
-            current_left_margin = max(self.base_left_margin - 25, min(self.base_left_margin + 35, current_left_margin))
+            current_left_margin += random.uniform(-margin_drift * 0.1, margin_drift * 0.1)
+            current_left_margin = max(self.base_left_margin - 20, min(self.base_left_margin + 30, current_left_margin))
 
             for word in words:
                 word_img = self._generate_word_image(word, is_heading, heading_level)
@@ -278,9 +417,9 @@ class UnruledPageLayout:
                 placed_x = int(cursor_x)
                 placed_y = int(current_y + sag_y + jitter_y)
 
-                # Micro-rotation for organic feel
-                rot_deg = random.uniform(-0.6, 0.6)
-                if abs(rot_deg) > 0.2:
+                # Micro-rotation for natural hand drift
+                rot_deg = random.uniform(-0.4, 0.4)
+                if abs(rot_deg) > 0.15:
                     word_img = word_img.rotate(rot_deg, resample=Image.Resampling.BILINEAR, expand=True)
 
                 current_page_glyphs.append({
@@ -292,7 +431,8 @@ class UnruledPageLayout:
                 })
 
                 # Space after word
-                cursor_x += word_img.width + random.randint(22, 34)
+                space_w = random.randint(28, 36)
+                cursor_x += word_img.width + space_w
 
             # Advance to next line
             current_y += int(line_spacing * (1.3 if is_heading else 1.0))

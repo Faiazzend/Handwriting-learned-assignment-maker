@@ -119,22 +119,62 @@ class HandwritingReader:
                                 crop = word_bin[cy:cy+ch, cx:cx+cw]
                                 extractor.register_glyph(ch_char, crop)
                                 registered_count += 1
+                        elif len(chars) == 1:
+                            # Single character: take all non-zero pixels cleanly
+                            coords = cv2.findNonZero(word_bin)
+                            if coords is not None:
+                                tx, ty, tw, th = cv2.boundingRect(coords)
+                                if tw >= 4 and th >= 6:
+                                    crop_trimmed = word_bin[ty:ty+th, tx:tx+tw]
+                                    extractor.register_glyph(chars[0], crop_trimmed)
+                                    registered_count += 1
                         else:
-                            # Slicing across word width
+                            # Cursive connected word: find valleys in vertical projection
+                            v_proj = np.sum(word_bin > 0, axis=0)
                             w_total = word_bin.shape[1]
-                            slice_w = max(w_total // len(chars), 1)
-                            for i, ch_char in enumerate(chars):
-                                sx1 = i * slice_w
-                                sx2 = (i + 1) * slice_w if i < len(chars) - 1 else w_total
-                                crop = word_bin[:, sx1:sx2]
+                            
+                            # Find local minima (valleys) between strokes
+                            if len(chars) > 1 and w_total >= len(chars) * 6:
+                                expected_w = w_total / len(chars)
+                                prev_cut = 0
                                 
+                                for i in range(1, len(chars)):
+                                    # Search window around expected boundary
+                                    center = int(i * expected_w)
+                                    win_start = max(prev_cut + 5, int(center - expected_w * 0.4))
+                                    win_end = min(w_total - 5, int(center + expected_w * 0.4))
+                                    
+                                    if win_end > win_start:
+                                        window = v_proj[win_start:win_end]
+                                        cut_x = win_start + int(np.argmin(window))
+                                    else:
+                                        cut_x = center
+                                        
+                                    crop = word_bin[:, prev_cut:cut_x]
+                                    prev_cut = cut_x
+                                    
+                                    coords = cv2.findNonZero(crop)
+                                    if coords is not None:
+                                        tx, ty, tw, th = cv2.boundingRect(coords)
+                                        # Typographical sanity check before registering
+                                        if tw >= 6 and th >= 10 and (tw * th >= 50):
+                                            ar = tw / float(th)
+                                            if 0.2 <= ar <= 2.2:
+                                                crop_trimmed = crop[ty:ty+th, tx:tx+tw]
+                                                extractor.register_glyph(chars[i-1], crop_trimmed)
+                                                registered_count += 1
+                                                
+                                # Last character
+                                crop = word_bin[:, prev_cut:]
                                 coords = cv2.findNonZero(crop)
                                 if coords is not None:
                                     tx, ty, tw, th = cv2.boundingRect(coords)
-                                    if tw >= 4 and th >= 6:
-                                        crop_trimmed = crop[ty:ty+th, tx:tx+tw]
-                                        extractor.register_glyph(ch_char, crop_trimmed)
-                                        registered_count += 1
+                                    if tw >= 6 and th >= 10 and (tw * th >= 50):
+                                        ar = tw / float(th)
+                                        if 0.2 <= ar <= 2.2:
+                                            crop_trimmed = crop[ty:ty+th, tx:tx+tw]
+                                            extractor.register_glyph(chars[-1], crop_trimmed)
+                                            registered_count += 1
             except Exception as e:
                 logger.error(f"RapidOCR alignment error: {e}")
 

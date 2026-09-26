@@ -276,14 +276,50 @@
                 
                 <!-- Left: Editor -->
                 <div class="flex-1 flex flex-col glass rounded-2xl overflow-hidden border border-slate-700/50">
-                    <div class="h-10 bg-slate-800/40 border-b border-slate-700/50 flex items-center px-4">
-                        <div class="flex space-x-2">
-                            <div class="w-3 h-3 rounded-full bg-slate-600"></div>
-                            <div class="w-3 h-3 rounded-full bg-slate-600"></div>
-                            <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                    <div class="h-10 bg-slate-800/40 border-b border-slate-700/50 flex items-center justify-between px-4">
+                        <div class="flex items-center">
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                            </div>
+                            <span class="ml-4 text-xs font-mono text-brand-textMuted">input.txt</span>
                         </div>
-                        <span class="ml-4 text-xs font-mono text-brand-textMuted">input.txt</span>
+                        
+                        <!-- Real-time Character Coverage Badge -->
+                        <div class="flex items-center gap-2">
+                            <template x-if="charValidation.valid && assignmentText.trim().length > 0">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>100% Scanned & Understood</span>
+                                </span>
+                            </template>
+                            <template x-if="!charValidation.valid && assignmentText.trim().length > 0">
+                                <button @click="showMissingModal = true" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 transition-colors cursor-pointer" title="Click to view details">
+                                    <i class="ph-bold ph-lock-key"></i>
+                                    <span x-text="charValidation.missing_characters.length + ' Un-scanned Char' + (charValidation.missing_characters.length > 1 ? 's' : '') + ' (Locked)'"></span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
+
+                    <!-- Warning Banner when un-scanned characters exist -->
+                    <div x-show="!charValidation.valid && assignmentText.trim().length > 0" class="bg-rose-950/40 border-b border-rose-800/40 px-4 py-2 flex items-center justify-between text-xs" style="display: none;">
+                        <div class="flex items-center gap-2 text-rose-300 overflow-hidden">
+                            <i class="ph-bold ph-warning-circle text-base text-rose-400 shrink-0"></i>
+                            <span class="shrink-0 font-medium">Generation locked. Missing scanned letters:</span>
+                            <div class="flex gap-1 flex-wrap items-center">
+                                <template x-for="ch in charValidation.missing_characters.slice(0, 10)" :key="ch">
+                                    <span class="bg-rose-900/80 border border-rose-600/70 text-rose-100 px-1.5 py-0.2 rounded font-mono font-bold text-[11px]" x-text="reprChar(ch)"></span>
+                                </template>
+                                <template x-if="charValidation.missing_characters.length > 10">
+                                    <span class="text-rose-400 text-[10px]" x-text="'+' + (charValidation.missing_characters.length - 10) + ' more'"></span>
+                                </template>
+                            </div>
+                        </div>
+                        <span class="text-rose-400 font-mono text-[11px] shrink-0 ml-2" x-text="charValidation.coverage_pct + '% coverage'"></span>
+                    </div>
+
                     <div class="flex-1 relative flex">
                         <!-- Line Numbers (fake) -->
                         <div class="w-10 bg-slate-900/30 border-r border-slate-700/30 flex flex-col items-center py-4 font-mono text-xs text-slate-500 user-select-none">
@@ -293,6 +329,7 @@
                         </div>
                         <textarea 
                             x-model="assignmentText"
+                            @input="debouncedValidate()"
                             class="flex-1 bg-transparent resize-none outline-none p-4 font-mono text-sm leading-6 text-brand-textPrimary whitespace-pre-wrap"
                             placeholder="Type your assignment text here..."></textarea>
                     </div>
@@ -458,9 +495,12 @@
                 <span>Download PDF</span>
             </button>
 
-            <button @click="generateAssignment" :disabled="isGenerating" class="bg-gradient-to-r from-brand-primary to-purple-500 text-white text-sm font-medium px-5 py-2 rounded-full shadow-glow flex items-center gap-2 border border-white/10 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all disabled:opacity-50">
-                <i class="ph-bold ph-magic-wand" :class="isGenerating ? 'animate-spin' : ''"></i>
-                <span x-text="isGenerating ? 'Synthesizing...' : 'Generate Assignment'"></span>
+            <button @click="handleGenerateClick()" 
+                    :disabled="isGenerating" 
+                    :class="(!charValidation.valid && assignmentText.trim().length > 0) ? 'bg-slate-800 text-rose-300 border border-rose-700/60 hover:bg-slate-800/80 hover:border-rose-500 cursor-pointer shadow-none' : 'bg-gradient-to-r from-brand-primary to-purple-500 text-white shadow-glow border border-white/10 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] disabled:opacity-50'"
+                    class="text-sm font-medium px-5 py-2 rounded-full flex items-center gap-2 transition-all">
+                <i :class="isGenerating ? 'ph-bold ph-magic-wand animate-spin' : (!charValidation.valid && assignmentText.trim().length > 0 ? 'ph-bold ph-lock-key text-rose-400' : 'ph-bold ph-magic-wand')"></i>
+                <span x-text="isGenerating ? 'Synthesizing...' : (!charValidation.valid && assignmentText.trim().length > 0 ? 'Locked (Scan Missing)' : 'Generate Assignment')"></span>
             </button>
         </div>
 
@@ -559,6 +599,57 @@
         </div>
     </aside>
 
+    <!-- Strict Validation Missing Characters Modal -->
+    <div x-show="showMissingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md" style="display: none;"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+        <div class="glass border border-rose-500/40 rounded-2xl max-w-md w-full p-6 shadow-2xl relative overflow-hidden" @click.away="showMissingModal = false">
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-amber-500"></div>
+            
+            <div class="flex items-start gap-4 mb-4">
+                <div class="w-11 h-11 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center shrink-0">
+                    <i class="ph-bold ph-shield-warning text-2xl text-rose-400"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold text-white">Un-Scanned Characters Detected</h3>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                        To preserve 100% authentic handwriting with zero computer font fallbacks, generation is strictly locked until all characters exist in your scanned bank.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 rounded-xl p-3 border border-slate-700/60 mb-4">
+                <div class="text-[10px] uppercase tracking-wider text-rose-400 font-semibold mb-2 flex items-center justify-between">
+                    <span>Missing from Note Scans:</span>
+                    <span class="font-mono text-slate-400" x-text="charValidation.coverage_pct + '% coverage'"></span>
+                </div>
+                <div class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1">
+                    <template x-for="ch in charValidation.missing_characters" :key="ch">
+                        <span class="bg-rose-950/90 border border-rose-700 text-rose-200 px-2 py-0.5 rounded-lg font-mono font-bold text-xs" x-text="reprChar(ch)"></span>
+                    </template>
+                </div>
+            </div>
+
+            <div class="text-xs text-slate-400 mb-5 space-y-1">
+                <p>• Replace or rewrite words containing these characters, or</p>
+                <p>• Upload notes containing these letters in <strong class="text-white">"Train on Notes"</strong>.</p>
+            </div>
+
+            <div class="flex justify-end gap-2.5">
+                <button @click="showMissingModal = false" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors">
+                    Back to Editor
+                </button>
+                <button @click="showMissingModal = false; activeSection = 'train'" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-brand-primary to-purple-600 hover:opacity-90 shadow-glow transition-all">
+                    Upload & Scan Notes
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications -->
     <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none">
         <template x-for="toast in toasts" :key="toast.id">
@@ -591,25 +682,32 @@
                 camscannerIntensity: 0.85,
                 
                 // Studio
-                assignmentText: `# Political Science Assignment: Modern State & Authority
-Name: Alex Mercer
-Student ID: POL-2026-9041
+                assignmentText: `# State and Authority
+Dan
 
-1. Origin of Modern State Authority
-→ Political authority and the idea of modern state came from organized institutions.
-→ Early days of power was fragmented across territories.
-→ In reality, legitimacy is not an abstract concept.
-→ It is the practical effect of a state demonstrating that no alternative center of violence can challenge it.
-
-2. Social Contract Theory
-→ Social contract theory explains why citizens agree to accept political authority.
-→ Citizens collectively form a contract and establish a governing body.
-→ State is fundamentally a product of political struggle and governance.`,
+Origin of State
+→ People in state are safe.
+→ Authority is essential to order.
+→ Power is in state.
+→ State is an institution of men.
+→ Early days power was fragmented.
+→ It is the practical effect of a state.`,
                 previewPages: [],
                 currentPage: 0,
                 isGenerating: false,
                 isTrainingNeural: false,
                 pdfUrl: null,
+
+                // Strict Validation State
+                charValidation: {
+                    valid: true,
+                    missing_characters: [],
+                    coverage_pct: 100,
+                    total_required: 0,
+                    total_available: 0
+                },
+                showMissingModal: false,
+                validateTimer: null,
                 
                 // Training
                 isUploading: false,
@@ -650,6 +748,48 @@ Student ID: POL-2026-9041
                     await this.fetchStats();
                     await this.fetchModelStatus();
                     await this.fetchGlyphs();
+                    await this.validateCurrentText();
+                },
+
+                reprChar(ch) {
+                    if (ch === ' ') return 'space';
+                    if (ch === '\t') return 'tab';
+                    return ch;
+                },
+
+                debouncedValidate() {
+                    clearTimeout(this.validateTimer);
+                    this.validateTimer = setTimeout(() => {
+                        this.validateCurrentText();
+                    }, 250);
+                },
+
+                async validateCurrentText() {
+                    if (!this.assignmentText.trim()) {
+                        this.charValidation = { valid: true, missing_characters: [], coverage_pct: 100, total_required: 0, total_available: 0 };
+                        return;
+                    }
+                    try {
+                        const res = await fetch('/api/validate-text', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text: this.assignmentText })
+                        });
+                        if (res.ok) {
+                            this.charValidation = await res.json();
+                        }
+                    } catch(e) {
+                        console.warn('Live validation failed:', e);
+                    }
+                },
+
+                handleGenerateClick() {
+                    if (!this.charValidation.valid) {
+                        this.showMissingModal = true;
+                        this.addToast(`Generation locked: ${this.charValidation.missing_characters.length} un-scanned character(s) in text.`, 'error');
+                        return;
+                    }
+                    this.generateAssignment();
                 },
 
                 async fetchStats() {
@@ -818,9 +958,17 @@ Student ID: POL-2026-9041
                             this.currentPage = 0;
                             this.pdfUrl = data.pdf_url;
                             this.addToast(`Generated ${data.page_count} page(s) successfully!`, 'success');
+                        } else if (res.status === 400) {
+                            const err = await res.json().catch(() => ({}));
+                            if (err.missing_characters) {
+                                this.charValidation.valid = false;
+                                this.charValidation.missing_characters = err.missing_characters;
+                                this.showMissingModal = true;
+                            }
+                            this.addToast(err.message || 'Generation locked: Missing scanned characters.', 'error');
                         } else {
                             const err = await res.json().catch(() => ({}));
-                            this.addToast('Generation failed: ' + (err.detail || 'Unknown error'), 'error');
+                            this.addToast('Generation failed: ' + (err.detail || err.message || 'Server error'), 'error');
                         }
                     } catch(e) {
                         this.addToast('Generation error: ' + e.message, 'error');
