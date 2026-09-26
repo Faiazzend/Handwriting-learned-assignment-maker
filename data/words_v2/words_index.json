@@ -1,0 +1,122 @@
+[
+  {
+    "label": "centralized",
+    "path": "data/words_v2/w_p1_b4_centralized.png",
+    "width": 104,
+    "height": 26,
+    "page": 1,
+    "sim": 0.82
+  },
+  {
+    "label": "Obedience",
+    "path": "data/words_v2/w_p1_b7_Obedience.png",
+    "width": 134,
+    "height": 27,
+    "page": 1,
+    "sim": 0.89
+  },
+  {
+    "label": "agree",
+    "path": "data/words_v2/w_p2_b2_agree.png",
+    "width": 67,
+    "height": 28,
+    "page": 2,
+    "sim": 0.8
+  },
+  {
+    "label": "people",
+    "path": "data/words_v2/w_p2_b4_people.png",
+    "width": 50,
+    "height": 20,
+    "page": 2,
+    "sim": 0.83
+  },
+  {
+    "label": "people",
+    "path": "data/words_v2/w_p2_b5_people.png",
+    "width": 61,
+    "height": 25,
+    "page": 2,
+    "sim": 1.0
+  },
+  {
+    "label": "contract",
+    "path": "data/words_v2/w_p2_b10_contract.png",
+    "width": 91,
+    "height": 24,
+    "page": 2,
+    "sim": 0.75
+  },
+  {
+    "label": "people",
+    "path": "data/words_v2/w_p2_b11_people.png",
+    "width": 138,
+    "height": 27,
+    "page": 2,
+    "sim": 0.71
+  },
+  {
+    "label": "model",
+    "path": "data/words_v2/w_p2_b20_model.png",
+    "width": 72,
+    "height": 33,
+    "page": 2,
+    "sim": 1.0
+  },
+  {
+    "label": "people",
+    "path": "data/words_v2/w_p2_b21_people.png",
+    "width": 65,
+    "height": 19,
+    "page": 2,
+    "sim": 1.0
+  },
+  {
+    "label": "accept",
+    "path": "data/words_v2/w_p2_b22_accept.png",
+    "width": 55,
+    "height": 14,
+    "page": 2,
+    "sim": 0.73
+  },
+  {
+    "label": "historic",
+    "path": "data/words_v2/w_p3_b0_historic.png",
+    "width": 60,
+    "height": 19,
+    "page": 3,
+    "sim": 0.75
+  },
+  {
+    "label": "an",
+    "path": "data/words_v2/w_p3_b8_an.png",
+    "width": 49,
+    "height": 14,
+    "page": 3,
+    "sim": 0.8
+  },
+  {
+    "label": "Stability",
+    "path": "data/words_v2/w_p3_b13_Stability.png",
+    "width": 81,
+    "height": 27,
+    "page": 3,
+    "sim": 0.78
+  },
+  {
+    "label": "state",
+    "path": "data/words_v2/w_p3_b17_state.png",
+    "width": 58,
+    "height": 26,
+    "page": 3,
+    "sim": 0.75
+  },
+  {
+    "label": "political",
+    "path": "data/words_v2/w_p3_b19_political.png",
+    "width": 79,
+    "height": 43,
+    "page": 3,
+    "sim": 0.78
+  }
+]

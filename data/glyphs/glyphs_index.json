@@ -1,1113 +1,2075 @@
 {
-  "P": [
+  "→": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_80\\1.png",
-      "width": 17,
-      "height": 11,
-      "aspect_ratio": 1.55
-    }
-  ],
-  "a": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_97\\1.png",
-      "width": 4,
-      "height": 7,
-      "aspect_ratio": 0.57
+      "path": "data/glyphs/char_8594/1.png",
+      "width": 30,
+      "height": 19,
+      "aspect_ratio": 1.58
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_97\\2.png",
-      "width": 24,
-      "height": 20,
-      "aspect_ratio": 1.2
+      "path": "data/glyphs/char_8594/2.png",
+      "width": 51,
+      "height": 16,
+      "aspect_ratio": 3.19
     },
     {
       "variant_id": 3,
-      "path": "data/glyphs\\char_97\\3.png",
-      "width": 12,
-      "height": 20,
-      "aspect_ratio": 0.6
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_97\\4.png",
-      "width": 23,
-      "height": 15,
-      "aspect_ratio": 1.53
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_97\\5.png",
-      "width": 25,
-      "height": 21,
-      "aspect_ratio": 1.19
-    },
-    {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_97\\6.png",
-      "width": 4,
-      "height": 6,
-      "aspect_ratio": 0.67
-    },
-    {
-      "variant_id": 7,
-      "path": "data/glyphs\\char_97\\7.png",
-      "width": 18,
-      "height": 11,
-      "aspect_ratio": 1.64
-    },
-    {
-      "variant_id": 8,
-      "path": "data/glyphs\\char_97\\8.png",
-      "width": 8,
-      "height": 18,
-      "aspect_ratio": 0.44
-    },
-    {
-      "variant_id": 9,
-      "path": "data/glyphs\\char_97\\9.png",
-      "width": 16,
-      "height": 13,
-      "aspect_ratio": 1.23
-    }
-  ],
-  "o": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_111\\1.png",
-      "width": 14,
-      "height": 9,
-      "aspect_ratio": 1.56
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_111\\2.png",
-      "width": 8,
-      "height": 8,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_111\\3.png",
-      "width": 5,
-      "height": 11,
-      "aspect_ratio": 0.45
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_111\\4.png",
-      "width": 7,
-      "height": 8,
-      "aspect_ratio": 0.88
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_111\\5.png",
-      "width": 8,
-      "height": 18,
-      "aspect_ratio": 0.44
-    },
-    {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_111\\6.png",
-      "width": 8,
-      "height": 9,
-      "aspect_ratio": 0.89
-    },
-    {
-      "variant_id": 7,
-      "path": "data/glyphs\\char_111\\7.png",
-      "width": 3,
-      "height": 9,
-      "aspect_ratio": 0.33
-    },
-    {
-      "variant_id": 8,
-      "path": "data/glyphs\\char_111\\8.png",
-      "width": 7,
-      "height": 9,
-      "aspect_ratio": 0.78
-    },
-    {
-      "variant_id": 9,
-      "path": "data/glyphs\\char_111\\9.png",
-      "width": 9,
-      "height": 11,
-      "aspect_ratio": 0.82
-    }
-  ],
-  "m": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_109\\1.png",
-      "width": 8,
-      "height": 13,
-      "aspect_ratio": 0.62
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_109\\2.png",
-      "width": 35,
-      "height": 25,
-      "aspect_ratio": 1.4
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_109\\3.png",
-      "width": 14,
-      "height": 11,
-      "aspect_ratio": 1.27
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_109\\4.png",
-      "width": 14,
-      "height": 11,
-      "aspect_ratio": 1.27
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_109\\5.png",
-      "width": 15,
+      "path": "data/glyphs/char_8594/3.png",
+      "width": 43,
       "height": 17,
-      "aspect_ratio": 0.88
-    }
-  ],
-  "t": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_116\\1.png",
-      "width": 5,
-      "height": 9,
-      "aspect_ratio": 0.56
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_116\\2.png",
-      "width": 7,
-      "height": 10,
-      "aspect_ratio": 0.7
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_116\\3.png",
-      "width": 16,
-      "height": 26,
-      "aspect_ratio": 0.62
+      "aspect_ratio": 2.53
     },
     {
       "variant_id": 4,
-      "path": "data/glyphs\\char_116\\4.png",
-      "width": 13,
-      "height": 9,
-      "aspect_ratio": 1.44
+      "path": "data/glyphs/char_8594/4.png",
+      "width": 51,
+      "height": 13,
+      "aspect_ratio": 3.92
     },
     {
       "variant_id": 5,
-      "path": "data/glyphs\\char_116\\5.png",
-      "width": 15,
-      "height": 12,
-      "aspect_ratio": 1.25
-    },
-    {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_116\\6.png",
-      "width": 3,
-      "height": 14,
-      "aspect_ratio": 0.21
-    },
-    {
-      "variant_id": 7,
-      "path": "data/glyphs\\char_116\\7.png",
-      "width": 9,
-      "height": 11,
-      "aspect_ratio": 0.82
-    },
-    {
-      "variant_id": 8,
-      "path": "data/glyphs\\char_116\\8.png",
-      "width": 7,
-      "height": 7,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 9,
-      "path": "data/glyphs\\char_116\\9.png",
-      "width": 5,
-      "height": 7,
-      "aspect_ratio": 0.71
-    },
-    {
-      "variant_id": 10,
-      "path": "data/glyphs\\char_116\\10.png",
-      "width": 15,
-      "height": 21,
-      "aspect_ratio": 0.71
-    },
-    {
-      "variant_id": 11,
-      "path": "data/glyphs\\char_116\\11.png",
-      "width": 18,
-      "height": 22,
-      "aspect_ratio": 0.82
-    },
-    {
-      "variant_id": 12,
-      "path": "data/glyphs\\char_116\\12.png",
-      "width": 13,
-      "height": 18,
-      "aspect_ratio": 0.72
-    },
-    {
-      "variant_id": 13,
-      "path": "data/glyphs\\char_116\\13.png",
-      "width": 12,
-      "height": 9,
-      "aspect_ratio": 1.33
-    }
-  ],
-  "w": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_119\\1.png",
-      "width": 10,
-      "height": 12,
-      "aspect_ratio": 0.83
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_119\\2.png",
-      "width": 9,
-      "height": 13,
-      "aspect_ratio": 0.69
-    }
-  ],
-  "\u2192": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_8594\\1.png",
-      "width": 29,
-      "height": 21,
+      "path": "data/glyphs/char_8594/5.png",
+      "width": 36,
+      "height": 26,
       "aspect_ratio": 1.38
     },
     {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_8594\\2.png",
-      "width": 33,
-      "height": 15,
+      "variant_id": 6,
+      "path": "data/glyphs/char_8594/6.png",
+      "width": 44,
+      "height": 10,
+      "aspect_ratio": 4.4
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs/char_8594/7.png",
+      "width": 42,
+      "height": 16,
+      "aspect_ratio": 2.62
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs/char_8594/8.png",
+      "width": 32,
+      "height": 13,
+      "aspect_ratio": 2.46
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs/char_8594/9.png",
+      "width": 40,
+      "height": 10,
+      "aspect_ratio": 4.0
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs/char_8594/10.png",
+      "width": 20,
+      "height": 14,
+      "aspect_ratio": 1.43
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs/char_8594/11.png",
+      "width": 29,
+      "height": 12,
+      "aspect_ratio": 2.42
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs/char_8594/12.png",
+      "width": 25,
+      "height": 14,
+      "aspect_ratio": 1.79
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs/char_8594/13.png",
+      "width": 22,
+      "height": 10,
       "aspect_ratio": 2.2
     },
     {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_8594\\3.png",
-      "width": 44,
-      "height": 15,
-      "aspect_ratio": 2.93
+      "variant_id": 14,
+      "path": "data/glyphs/char_8594/14.png",
+      "width": 25,
+      "height": 19,
+      "aspect_ratio": 1.32
     },
     {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_8594\\4.png",
-      "width": 27,
-      "height": 14,
-      "aspect_ratio": 1.93
+      "variant_id": 15,
+      "path": "data/glyphs/char_8594/15.png",
+      "width": 30,
+      "height": 20,
+      "aspect_ratio": 1.5
     },
     {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_8594\\5.png",
+      "variant_id": 16,
+      "path": "data/glyphs/char_8594/16.png",
+      "width": 38,
+      "height": 12,
+      "aspect_ratio": 3.17
+    },
+    {
+      "variant_id": 17,
+      "path": "data/glyphs/char_8594/17.png",
       "width": 40,
       "height": 13,
       "aspect_ratio": 3.08
     },
     {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_8594\\6.png",
-      "width": 42,
-      "height": 13,
-      "aspect_ratio": 3.23
+      "variant_id": 18,
+      "path": "data/glyphs/char_8594/18.png",
+      "width": 53,
+      "height": 12,
+      "aspect_ratio": 4.42
     },
     {
-      "variant_id": 7,
-      "path": "data/glyphs\\char_8594\\7.png",
-      "width": 46,
+      "variant_id": 19,
+      "path": "data/glyphs/char_8594/19.png",
+      "width": 29,
       "height": 17,
-      "aspect_ratio": 2.71
+      "aspect_ratio": 1.71
     },
     {
-      "variant_id": 8,
-      "path": "data/glyphs\\char_8594\\8.png",
-      "width": 39,
-      "height": 14,
-      "aspect_ratio": 2.79
+      "variant_id": 20,
+      "path": "data/glyphs/char_8594/20.png",
+      "width": 22,
+      "height": 16,
+      "aspect_ratio": 1.38
     },
     {
-      "variant_id": 9,
-      "path": "data/glyphs\\char_8594\\9.png",
-      "width": 46,
-      "height": 13,
-      "aspect_ratio": 3.54
+      "variant_id": 21,
+      "path": "data/glyphs/char_8594/21.png",
+      "width": 30,
+      "height": 20,
+      "aspect_ratio": 1.5
     },
     {
-      "variant_id": 10,
-      "path": "data/glyphs\\char_8594\\10.png",
+      "variant_id": 22,
+      "path": "data/glyphs/char_8594/22.png",
+      "width": 24,
+      "height": 16,
+      "aspect_ratio": 1.5
+    },
+    {
+      "variant_id": 23,
+      "path": "data/glyphs/char_8594/23.png",
+      "width": 22,
+      "height": 16,
+      "aspect_ratio": 1.38
+    },
+    {
+      "variant_id": 24,
+      "path": "data/glyphs/char_8594/24.png",
+      "width": 49,
+      "height": 23,
+      "aspect_ratio": 2.13
+    },
+    {
+      "variant_id": 25,
+      "path": "data/glyphs/char_8594/25.png",
+      "width": 25,
+      "height": 12,
+      "aspect_ratio": 2.08
+    },
+    {
+      "variant_id": 26,
+      "path": "data/glyphs/char_8594/26.png",
+      "width": 47,
+      "height": 11,
+      "aspect_ratio": 4.27
+    },
+    {
+      "variant_id": 27,
+      "path": "data/glyphs/char_8594/27.png",
       "width": 42,
       "height": 12,
       "aspect_ratio": 3.5
-    }
-  ],
-  "T": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_84\\1.png",
-      "width": 6,
-      "height": 22,
-      "aspect_ratio": 0.27
     },
     {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_84\\2.png",
-      "width": 13,
-      "height": 13,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_84\\3.png",
-      "width": 4,
-      "height": 7,
-      "aspect_ratio": 0.57
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_84\\4.png",
-      "width": 12,
+      "variant_id": 28,
+      "path": "data/glyphs/char_8594/28.png",
+      "width": 46,
       "height": 12,
-      "aspect_ratio": 1.0
+      "aspect_ratio": 3.83
     },
     {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_84\\5.png",
-      "width": 21,
-      "height": 16,
-      "aspect_ratio": 1.31
-    },
-    {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_84\\6.png",
-      "width": 21,
-      "height": 16,
-      "aspect_ratio": 1.31
-    }
-  ],
-  "b": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_98\\1.png",
-      "width": 17,
-      "height": 17,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_98\\2.png",
-      "width": 12,
-      "height": 12,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_98\\3.png",
-      "width": 12,
-      "height": 22,
-      "aspect_ratio": 0.55
+      "variant_id": 29,
+      "path": "data/glyphs/char_8594/29.png",
+      "width": 39,
+      "height": 14,
+      "aspect_ratio": 2.79
     }
   ],
   "E": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_69\\1.png",
-      "width": 10,
-      "height": 30,
-      "aspect_ratio": 0.33
+      "path": "data/glyphs/char_69/1.png",
+      "width": 17,
+      "height": 22,
+      "aspect_ratio": 0.77
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_69\\2.png",
-      "width": 8,
-      "height": 20,
-      "aspect_ratio": 0.4
-    }
-  ],
-  ".": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_46\\1.png",
-      "width": 4,
-      "height": 3,
-      "aspect_ratio": 1.33
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_46\\2.png",
-      "width": 3,
-      "height": 4,
-      "aspect_ratio": 0.75
-    }
-  ],
-  "c": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_99\\1.png",
-      "width": 13,
-      "height": 13,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_99\\2.png",
-      "width": 9,
-      "height": 12,
-      "aspect_ratio": 0.75
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_99\\3.png",
-      "width": 8,
-      "height": 15,
-      "aspect_ratio": 0.53
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_99\\4.png",
-      "width": 8,
-      "height": 7,
-      "aspect_ratio": 1.14
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_99\\5.png",
-      "width": 8,
+      "path": "data/glyphs/char_69/2.png",
+      "width": 5,
       "height": 19,
-      "aspect_ratio": 0.42
+      "aspect_ratio": 0.26
+    }
+  ],
+  "O": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs/char_79/1.png",
+      "width": 12,
+      "height": 22,
+      "aspect_ratio": 0.55
+    }
+  ],
+  "a": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs/char_97/1.png",
+      "width": 14,
+      "height": 13,
+      "aspect_ratio": 1.08
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs/char_97/2.png",
+      "width": 15,
+      "height": 13,
+      "aspect_ratio": 1.15
     }
   ],
   "S": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_83\\1.png",
-      "width": 20,
+      "path": "data/glyphs/char_83/1.png",
+      "width": 12,
       "height": 20,
-      "aspect_ratio": 1.0
-    },
+      "aspect_ratio": 0.6
+    }
+  ],
+  "u": [
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_83\\2.png",
+      "path": "data/glyphs_v2/char_117/2.png",
+      "width": 8,
+      "height": 9,
+      "aspect_ratio": 0.89,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_117/4.png",
+      "width": 12,
+      "height": 10,
+      "aspect_ratio": 1.2,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_117/6.png",
+      "width": 7,
+      "height": 10,
+      "aspect_ratio": 0.7,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs_v2/char_117/9.png",
       "width": 11,
       "height": 9,
-      "aspect_ratio": 1.22
+      "aspect_ratio": 1.22,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 7
     },
     {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_83\\3.png",
-      "width": 12,
-      "height": 16,
-      "aspect_ratio": 0.75
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_117/10.png",
+      "width": 6,
+      "height": 9,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
     },
     {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_83\\4.png",
-      "width": 12,
-      "height": 16,
-      "aspect_ratio": 0.75
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_117/11.png",
+      "width": 4,
+      "height": 9,
+      "aspect_ratio": 0.44,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 4
     },
     {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_83\\5.png",
-      "width": 18,
-      "height": 24,
-      "aspect_ratio": 0.75
-    }
-  ],
-  "f": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_102\\1.png",
-      "width": 12,
-      "height": 15,
-      "aspect_ratio": 0.8
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_117/13.png",
+      "width": 4,
+      "height": 9,
+      "aspect_ratio": 0.44,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
     },
     {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_102\\2.png",
-      "width": 3,
-      "height": 8,
-      "aspect_ratio": 0.38
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_102\\3.png",
-      "width": 11,
-      "height": 10,
-      "aspect_ratio": 1.1
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_102\\4.png",
-      "width": 11,
-      "height": 10,
-      "aspect_ratio": 1.1
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_102\\5.png",
-      "width": 14,
-      "height": 40,
-      "aspect_ratio": 0.35
-    },
-    {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_102\\6.png",
-      "width": 19,
-      "height": 44,
-      "aspect_ratio": 0.43
-    }
-  ],
-  "I": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_73\\1.png",
-      "width": 16,
-      "height": 18,
-      "aspect_ratio": 0.89
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_73\\2.png",
-      "width": 10,
-      "height": 11,
-      "aspect_ratio": 0.91
-    }
-  ],
-  "r": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_114\\1.png",
-      "width": 13,
-      "height": 12,
-      "aspect_ratio": 1.08
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_114\\2.png",
-      "width": 11,
-      "height": 8,
-      "aspect_ratio": 1.38
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_114\\3.png",
-      "width": 13,
-      "height": 18,
-      "aspect_ratio": 0.72
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_114\\4.png",
-      "width": 3,
-      "height": 6,
-      "aspect_ratio": 0.5
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_114\\5.png",
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_117/14.png",
       "width": 7,
       "height": 8,
-      "aspect_ratio": 0.88
+      "aspect_ratio": 0.88,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
     },
     {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_114\\6.png",
-      "width": 8,
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_117/15.png",
+      "width": 9,
       "height": 8,
-      "aspect_ratio": 1.0
+      "aspect_ratio": 1.12,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
     }
   ],
   "l": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_108\\1.png",
-      "width": 7,
-      "height": 11,
-      "aspect_ratio": 0.64
+      "path": "data/glyphs_v2/char_108/1.png",
+      "width": 8,
+      "height": 24,
+      "aspect_ratio": 0.33,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_108\\2.png",
-      "width": 5,
+      "path": "data/glyphs_v2/char_108/2.png",
+      "width": 15,
       "height": 20,
-      "aspect_ratio": 0.25
+      "aspect_ratio": 0.75,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
     },
     {
       "variant_id": 3,
-      "path": "data/glyphs\\char_108\\3.png",
-      "width": 4,
+      "path": "data/glyphs_v2/char_108/3.png",
+      "width": 7,
+      "height": 27,
+      "aspect_ratio": 0.26,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_108/5.png",
+      "width": 11,
+      "height": 25,
+      "aspect_ratio": 0.44,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_108/6.png",
+      "width": 15,
+      "height": 19,
+      "aspect_ratio": 0.79,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_108/10.png",
+      "width": 11,
+      "height": 13,
+      "aspect_ratio": 0.85,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_108/11.png",
+      "width": 5,
+      "height": 14,
+      "aspect_ratio": 0.36,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_108/13.png",
+      "width": 9,
       "height": 18,
-      "aspect_ratio": 0.22
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_108/15.png",
+      "width": 7,
+      "height": 14,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    }
+  ],
+  "w": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_119/2.png",
+      "width": 6,
+      "height": 7,
+      "aspect_ratio": 0.86,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_119/3.png",
+      "width": 15,
+      "height": 11,
+      "aspect_ratio": 1.36,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
     },
     {
       "variant_id": 4,
-      "path": "data/glyphs\\char_108\\4.png",
-      "width": 16,
+      "path": "data/glyphs_v2/char_119/4.png",
+      "width": 11,
       "height": 18,
-      "aspect_ratio": 0.89
+      "aspect_ratio": 0.61,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_119/8.png",
+      "width": 8,
+      "height": 10,
+      "aspect_ratio": 0.8,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    }
+  ],
+  "n": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_110/2.png",
+      "width": 8,
+      "height": 11,
+      "aspect_ratio": 0.73,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_110/3.png",
+      "width": 7,
+      "height": 8,
+      "aspect_ratio": 0.88,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_110/4.png",
+      "width": 9,
+      "height": 9,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_110/6.png",
+      "width": 7,
+      "height": 10,
+      "aspect_ratio": 0.7,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_110/10.png",
+      "width": 9,
+      "height": 9,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_110/13.png",
+      "width": 11,
+      "height": 11,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_110/15.png",
+      "width": 8,
+      "height": 12,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
     }
   ],
   "i": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_105\\1.png",
+      "path": "data/glyphs_v2/char_105/1.png",
       "width": 6,
-      "height": 10,
-      "aspect_ratio": 0.6
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_105\\2.png",
-      "width": 4,
-      "height": 6,
-      "aspect_ratio": 0.67
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_105\\3.png",
-      "width": 4,
-      "height": 6,
-      "aspect_ratio": 0.67
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_105\\4.png",
-      "width": 8,
-      "height": 8,
-      "aspect_ratio": 1.0
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_105\\5.png",
-      "width": 13,
-      "height": 11,
-      "aspect_ratio": 1.18
+      "height": 21,
+      "aspect_ratio": 0.29,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
     },
     {
       "variant_id": 6,
-      "path": "data/glyphs\\char_105\\6.png",
-      "width": 5,
-      "height": 15,
-      "aspect_ratio": 0.33
+      "path": "data/glyphs_v2/char_105/6.png",
+      "width": 11,
+      "height": 20,
+      "aspect_ratio": 0.55,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
     },
     {
       "variant_id": 7,
-      "path": "data/glyphs\\char_105\\7.png",
-      "width": 3,
-      "height": 9,
-      "aspect_ratio": 0.33
-    },
-    {
-      "variant_id": 8,
-      "path": "data/glyphs\\char_105\\8.png",
-      "width": 3,
-      "height": 9,
-      "aspect_ratio": 0.33
-    },
-    {
-      "variant_id": 9,
-      "path": "data/glyphs\\char_105\\9.png",
-      "width": 9,
-      "height": 16,
-      "aspect_ratio": 0.56
+      "path": "data/glyphs_v2/char_105/7.png",
+      "width": 8,
+      "height": 13,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
     },
     {
       "variant_id": 10,
-      "path": "data/glyphs\\char_105\\10.png",
-      "width": 6,
-      "height": 21,
-      "aspect_ratio": 0.29
+      "path": "data/glyphs_v2/char_105/10.png",
+      "width": 14,
+      "height": 19,
+      "aspect_ratio": 0.74,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
     },
     {
-      "variant_id": 11,
-      "path": "data/glyphs\\char_105\\11.png",
-      "width": 7,
-      "height": 18,
-      "aspect_ratio": 0.39
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_105/13.png",
+      "width": 9,
+      "height": 11,
+      "aspect_ratio": 0.82,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    }
+  ],
+  "t": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_116/2.png",
+      "width": 5,
+      "height": 20,
+      "aspect_ratio": 0.25,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_116/8.png",
+      "width": 8,
+      "height": 11,
+      "aspect_ratio": 0.73,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_116/10.png",
+      "width": 5,
+      "height": 8,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_116/15.png",
+      "width": 4,
+      "height": 14,
+      "aspect_ratio": 0.29,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    }
+  ],
+  "d": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_100/1.png",
+      "width": 6,
+      "height": 7,
+      "aspect_ratio": 0.86,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_100/2.png",
+      "width": 16,
+      "height": 14,
+      "aspect_ratio": 1.14,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_100/3.png",
+      "width": 10,
+      "height": 20,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_100/6.png",
+      "width": 11,
+      "height": 14,
+      "aspect_ratio": 0.79,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_100/7.png",
+      "width": 13,
+      "height": 13,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs_v2/char_100/9.png",
+      "width": 5,
+      "height": 7,
+      "aspect_ratio": 0.71,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
     },
     {
       "variant_id": 12,
-      "path": "data/glyphs\\char_105\\12.png",
-      "width": 7,
-      "height": 18,
-      "aspect_ratio": 0.39
-    }
-  ],
-  "p": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_112\\1.png",
-      "width": 12,
-      "height": 17,
-      "aspect_ratio": 0.71
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_112\\2.png",
+      "path": "data/glyphs_v2/char_100/12.png",
       "width": 11,
-      "height": 21,
-      "aspect_ratio": 0.52
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_112\\3.png",
-      "width": 20,
       "height": 15,
-      "aspect_ratio": 1.33
+      "aspect_ratio": 0.73,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 8
     },
     {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_112\\4.png",
-      "width": 17,
-      "height": 23,
-      "aspect_ratio": 0.74
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_112\\5.png",
-      "width": 6,
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_100/13.png",
+      "width": 12,
       "height": 11,
-      "aspect_ratio": 0.55
-    }
-  ],
-  "D": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_68\\1.png",
-      "width": 19,
-      "height": 21,
-      "aspect_ratio": 0.9
-    }
-  ],
-  "n": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_110\\1.png",
-      "width": 26,
-      "height": 22,
-      "aspect_ratio": 1.18
+      "aspect_ratio": 1.09,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
     },
     {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_110\\2.png",
-      "width": 10,
-      "height": 9,
-      "aspect_ratio": 1.11
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_100/14.png",
+      "width": 9,
+      "height": 12,
+      "aspect_ratio": 0.75,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
     },
     {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_110\\3.png",
-      "width": 6,
-      "height": 25,
-      "aspect_ratio": 0.24
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_110\\4.png",
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_100/15.png",
       "width": 5,
-      "height": 10,
-      "aspect_ratio": 0.5
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_110\\5.png",
-      "width": 5,
-      "height": 9,
-      "aspect_ratio": 0.56
+      "height": 8,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
     }
   ],
   "e": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_101\\1.png",
-      "width": 8,
-      "height": 10,
-      "aspect_ratio": 0.8
+      "path": "data/glyphs_v2/char_101/1.png",
+      "width": 12,
+      "height": 22,
+      "aspect_ratio": 0.55,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_101\\2.png",
-      "width": 10,
+      "path": "data/glyphs_v2/char_101/2.png",
+      "width": 13,
       "height": 9,
-      "aspect_ratio": 1.11
+      "aspect_ratio": 1.44,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_101/7.png",
+      "width": 15,
+      "height": 16,
+      "aspect_ratio": 0.94,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_101/12.png",
+      "width": 8,
+      "height": 10,
+      "aspect_ratio": 0.8,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_101/14.png",
+      "width": 14,
+      "height": 14,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_101/15.png",
+      "width": 23,
+      "height": 21,
+      "aspect_ratio": 1.1,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    }
+  ],
+  "'": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_39/1.png",
+      "width": 17,
+      "height": 16,
+      "aspect_ratio": 1.06,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
     },
     {
       "variant_id": 3,
-      "path": "data/glyphs\\char_101\\3.png",
-      "width": 10,
-      "height": 9,
-      "aspect_ratio": 1.11
+      "path": "data/glyphs_v2/char_39/3.png",
+      "width": 18,
+      "height": 13,
+      "aspect_ratio": 1.38,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
     },
     {
       "variant_id": 4,
-      "path": "data/glyphs\\char_101\\4.png",
-      "width": 17,
-      "height": 20,
-      "aspect_ratio": 0.85
+      "path": "data/glyphs_v2/char_39/4.png",
+      "width": 14,
+      "height": 18,
+      "aspect_ratio": 0.78,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    }
+  ],
+  "m": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_109/1.png",
+      "width": 14,
+      "height": 9,
+      "aspect_ratio": 1.56,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 0
     },
     {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_101\\5.png",
-      "width": 6,
-      "height": 8,
-      "aspect_ratio": 0.75
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_109/7.png",
+      "width": 10,
+      "height": 10,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 7
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_109/8.png",
+      "width": 24,
+      "height": 16,
+      "aspect_ratio": 1.5,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 8
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_109/10.png",
+      "width": 10,
+      "height": 16,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_109/11.png",
+      "width": 13,
+      "height": 9,
+      "aspect_ratio": 1.44,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 9
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_109/12.png",
+      "width": 14,
+      "height": 11,
+      "aspect_ratio": 1.27,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_109/13.png",
+      "width": 18,
+      "height": 11,
+      "aspect_ratio": 1.64,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_109/14.png",
+      "width": 17,
+      "height": 17,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_109/15.png",
+      "width": 21,
+      "height": 18,
+      "aspect_ratio": 1.17,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    }
+  ],
+  "y": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_121/2.png",
+      "width": 13,
+      "height": 33,
+      "aspect_ratio": 0.39,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_121/3.png",
+      "width": 13,
+      "height": 22,
+      "aspect_ratio": 0.59,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 2
     },
     {
       "variant_id": 6,
-      "path": "data/glyphs\\char_101\\6.png",
-      "width": 24,
+      "path": "data/glyphs_v2/char_121/6.png",
+      "width": 12,
+      "height": 19,
+      "aspect_ratio": 0.63,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_121/7.png",
+      "width": 10,
       "height": 25,
-      "aspect_ratio": 0.96
+      "aspect_ratio": 0.4,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_121/8.png",
+      "width": 11,
+      "height": 30,
+      "aspect_ratio": 0.37,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs_v2/char_121/9.png",
+      "width": 13,
+      "height": 26,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 6
+    }
+  ],
+  "h": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_104/2.png",
+      "width": 10,
+      "height": 14,
+      "aspect_ratio": 0.71,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_104/3.png",
+      "width": 8,
+      "height": 10,
+      "aspect_ratio": 0.8,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_104/6.png",
+      "width": 5,
+      "height": 9,
+      "aspect_ratio": 0.56,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs_v2/char_104/9.png",
+      "width": 4,
+      "height": 7,
+      "aspect_ratio": 0.57,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_104/11.png",
+      "width": 8,
+      "height": 12,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_104/12.png",
+      "width": 10,
+      "height": 10,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 12
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_104/13.png",
+      "width": 4,
+      "height": 10,
+      "aspect_ratio": 0.4,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_104/15.png",
+      "width": 5,
+      "height": 6,
+      "aspect_ratio": 0.83,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    }
+  ],
+  "G": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_71/1.png",
+      "width": 13,
+      "height": 24,
+      "aspect_ratio": 0.54,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    }
+  ],
+  "P": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_80/1.png",
+      "width": 17,
+      "height": 17,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_80/2.png",
+      "width": 12,
+      "height": 17,
+      "aspect_ratio": 0.71,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 8
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_80/4.png",
+      "width": 8,
+      "height": 10,
+      "aspect_ratio": 0.8,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    }
+  ],
+  "o": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_111/2.png",
+      "width": 7,
+      "height": 9,
+      "aspect_ratio": 0.78,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_111/3.png",
+      "width": 11,
+      "height": 14,
+      "aspect_ratio": 0.79,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_111/4.png",
+      "width": 8,
+      "height": 10,
+      "aspect_ratio": 0.8,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_111/7.png",
+      "width": 10,
+      "height": 15,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_111/12.png",
+      "width": 16,
+      "height": 15,
+      "aspect_ratio": 1.07,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_111/13.png",
+      "width": 8,
+      "height": 5,
+      "aspect_ratio": 1.6,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_111/15.png",
+      "width": 9,
+      "height": 10,
+      "aspect_ratio": 0.9,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    }
+  ],
+  "C": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_67/1.png",
+      "width": 10,
+      "height": 12,
+      "aspect_ratio": 0.83,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_67/2.png",
+      "width": 14,
+      "height": 17,
+      "aspect_ratio": 0.82,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_67/3.png",
+      "width": 12,
+      "height": 8,
+      "aspect_ratio": 1.5,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_67/4.png",
+      "width": 10,
+      "height": 11,
+      "aspect_ratio": 0.91,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_67/5.png",
+      "width": 7,
+      "height": 12,
+      "aspect_ratio": 0.58,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_67/6.png",
+      "width": 6,
+      "height": 6,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    }
+  ],
+  "r": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_114/1.png",
+      "width": 9,
+      "height": 8,
+      "aspect_ratio": 1.12,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_114/2.png",
+      "width": 6,
+      "height": 9,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_114/4.png",
+      "width": 9,
+      "height": 11,
+      "aspect_ratio": 0.82,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_114/5.png",
+      "width": 5,
+      "height": 8,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 7
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_114/6.png",
+      "width": 10,
+      "height": 10,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs_v2/char_114/9.png",
+      "width": 14,
+      "height": 15,
+      "aspect_ratio": 0.93,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_114/12.png",
+      "width": 12,
+      "height": 12,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_114/13.png",
+      "width": 11,
+      "height": 10,
+      "aspect_ratio": 1.1,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_114/14.png",
+      "width": 6,
+      "height": 8,
+      "aspect_ratio": 0.75,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_114/15.png",
+      "width": 9,
+      "height": 18,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    }
+  ],
+  "M": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_77/1.png",
+      "width": 20,
+      "height": 15,
+      "aspect_ratio": 1.33,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 2
+    }
+  ],
+  "L": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_76/1.png",
+      "width": 18,
+      "height": 17,
+      "aspect_ratio": 1.06,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 2
+    }
+  ],
+  "g": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_103/1.png",
+      "width": 12,
+      "height": 30,
+      "aspect_ratio": 0.4,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_103/2.png",
+      "width": 7,
+      "height": 10,
+      "aspect_ratio": 0.7,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_103/3.png",
+      "width": 11,
+      "height": 12,
+      "aspect_ratio": 0.92,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_103/4.png",
+      "width": 10,
+      "height": 10,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_103/5.png",
+      "width": 7,
+      "height": 22,
+      "aspect_ratio": 0.32,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_103/6.png",
+      "width": 11,
+      "height": 22,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_103/8.png",
+      "width": 15,
+      "height": 24,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 7
+    }
+  ],
+  "b": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_98/1.png",
+      "width": 8,
+      "height": 18,
+      "aspect_ratio": 0.44,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_98/2.png",
+      "width": 5,
+      "height": 15,
+      "aspect_ratio": 0.33,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_98/3.png",
+      "width": 8,
+      "height": 20,
+      "aspect_ratio": 0.4,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_98/6.png",
+      "width": 4,
+      "height": 20,
+      "aspect_ratio": 0.2,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_98/7.png",
+      "width": 6,
+      "height": 9,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_98/10.png",
+      "width": 6,
+      "height": 18,
+      "aspect_ratio": 0.33,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 7
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_98/11.png",
+      "width": 8,
+      "height": 23,
+      "aspect_ratio": 0.35,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    }
+  ],
+  "s": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_115/2.png",
+      "width": 7,
+      "height": 14,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_115/4.png",
+      "width": 5,
+      "height": 8,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_115/5.png",
+      "width": 11,
+      "height": 12,
+      "aspect_ratio": 0.92,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_115/10.png",
+      "width": 6,
+      "height": 8,
+      "aspect_ratio": 0.75,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_115/11.png",
+      "width": 5,
+      "height": 9,
+      "aspect_ratio": 0.56,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_115/12.png",
+      "width": 5,
+      "height": 7,
+      "aspect_ratio": 0.71,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_115/13.png",
+      "width": 4,
+      "height": 12,
+      "aspect_ratio": 0.33,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_115/14.png",
+      "width": 8,
+      "height": 13,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    }
+  ],
+  "v": [
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_118/5.png",
+      "width": 6,
+      "height": 13,
+      "aspect_ratio": 0.46,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 12
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_118/6.png",
+      "width": 12,
+      "height": 11,
+      "aspect_ratio": 1.09,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 13
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_118/10.png",
+      "width": 10,
+      "height": 16,
+      "aspect_ratio": 0.62,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 7
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_118/11.png",
+      "width": 10,
+      "height": 13,
+      "aspect_ratio": 0.77,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    }
+  ],
+  "c": [
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_99/2.png",
+      "width": 8,
+      "height": 8,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_99/3.png",
+      "width": 10,
+      "height": 11,
+      "aspect_ratio": 0.91,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_99/4.png",
+      "width": 13,
+      "height": 17,
+      "aspect_ratio": 0.76,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_99/7.png",
+      "width": 14,
+      "height": 28,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_99/8.png",
+      "width": 11,
+      "height": 24,
+      "aspect_ratio": 0.46,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 9,
+      "path": "data/glyphs_v2/char_99/9.png",
+      "width": 9,
+      "height": 11,
+      "aspect_ratio": 0.82,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_99/10.png",
+      "width": 8,
+      "height": 12,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_99/12.png",
+      "width": 9,
+      "height": 23,
+      "aspect_ratio": 0.39,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_99/13.png",
+      "width": 13,
+      "height": 18,
+      "aspect_ratio": 0.72,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 12
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_99/14.png",
+      "width": 16,
+      "height": 20,
+      "aspect_ratio": 0.8,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 0
+    }
+  ],
+  "f": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_102/1.png",
+      "width": 14,
+      "height": 17,
+      "aspect_ratio": 0.82,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_102/2.png",
+      "width": 17,
+      "height": 16,
+      "aspect_ratio": 1.06,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_102/3.png",
+      "width": 10,
+      "height": 22,
+      "aspect_ratio": 0.45,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 5,
+      "path": "data/glyphs_v2/char_102/5.png",
+      "width": 11,
+      "height": 11,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 6,
+      "path": "data/glyphs_v2/char_102/6.png",
+      "width": 10,
+      "height": 12,
+      "aspect_ratio": 0.83,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_102/8.png",
+      "width": 6,
+      "height": 16,
+      "aspect_ratio": 0.38,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_102/10.png",
+      "width": 13,
+      "height": 27,
+      "aspect_ratio": 0.48,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 13
+    },
+    {
+      "variant_id": 11,
+      "path": "data/glyphs_v2/char_102/11.png",
+      "width": 14,
+      "height": 14,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_102/12.png",
+      "width": 12,
+      "height": 23,
+      "aspect_ratio": 0.52,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_102/13.png",
+      "width": 6,
+      "height": 14,
+      "aspect_ratio": 0.43,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_102/14.png",
+      "width": 18,
+      "height": 24,
+      "aspect_ratio": 0.75,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 9
+    }
+  ],
+  "z": [
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_122/3.png",
+      "width": 3,
+      "height": 6,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 7
+    }
+  ],
+  "-": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_45/1.png",
+      "width": 3,
+      "height": 6,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 4
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_45/2.png",
+      "width": 6,
+      "height": 7,
+      "aspect_ratio": 0.86,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    }
+  ],
+  "p": [
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_112/4.png",
+      "width": 12,
+      "height": 20,
+      "aspect_ratio": 0.6,
+      "source_page": "notes_page_1.jpg",
+      "source_line": 7
+    },
+    {
+      "variant_id": 7,
+      "path": "data/glyphs_v2/char_112/7.png",
+      "width": 8,
+      "height": 15,
+      "aspect_ratio": 0.53,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 8,
+      "path": "data/glyphs_v2/char_112/8.png",
+      "width": 8,
+      "height": 17,
+      "aspect_ratio": 0.47,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 10,
+      "path": "data/glyphs_v2/char_112/10.png",
+      "width": 8,
+      "height": 14,
+      "aspect_ratio": 0.57,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 12,
+      "path": "data/glyphs_v2/char_112/12.png",
+      "width": 5,
+      "height": 17,
+      "aspect_ratio": 0.29,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    },
+    {
+      "variant_id": 13,
+      "path": "data/glyphs_v2/char_112/13.png",
+      "width": 5,
+      "height": 20,
+      "aspect_ratio": 0.25,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 14,
+      "path": "data/glyphs_v2/char_112/14.png",
+      "width": 5,
+      "height": 11,
+      "aspect_ratio": 0.45,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 15,
+      "path": "data/glyphs_v2/char_112/15.png",
+      "width": 6,
+      "height": 11,
+      "aspect_ratio": 0.55,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 1
+    }
+  ],
+  "j": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_106/1.png",
+      "width": 5,
+      "height": 9,
+      "aspect_ratio": 0.56,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_106/3.png",
+      "width": 6,
+      "height": 16,
+      "aspect_ratio": 0.38,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 7
+    }
+  ],
+  "k": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_107/1.png",
+      "width": 10,
+      "height": 8,
+      "aspect_ratio": 1.25,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_107/3.png",
+      "width": 13,
+      "height": 17,
+      "aspect_ratio": 0.76,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    }
+  ],
+  "F": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_70/1.png",
+      "width": 3,
+      "height": 6,
+      "aspect_ratio": 0.5,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    }
+  ],
+  ".": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_46/1.png",
+      "width": 9,
+      "height": 9,
+      "aspect_ratio": 1.0,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_46/2.png",
+      "width": 4,
+      "height": 9,
+      "aspect_ratio": 0.44,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    },
+    {
+      "variant_id": 3,
+      "path": "data/glyphs_v2/char_46/3.png",
+      "width": 4,
+      "height": 9,
+      "aspect_ratio": 0.44,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    },
+    {
+      "variant_id": 4,
+      "path": "data/glyphs_v2/char_46/4.png",
+      "width": 8,
+      "height": 9,
+      "aspect_ratio": 0.89,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    }
+  ],
+  "q": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_113/1.png",
+      "width": 4,
+      "height": 6,
+      "aspect_ratio": 0.67,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 0
+    }
+  ],
+  "(": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_40/1.png",
+      "width": 25,
+      "height": 8,
+      "aspect_ratio": 3.12,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 3
+    }
+  ],
+  "?": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_63/1.png",
+      "width": 5,
+      "height": 21,
+      "aspect_ratio": 0.24,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 5
+    }
+  ],
+  "V": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_86/1.png",
+      "width": 13,
+      "height": 10,
+      "aspect_ratio": 1.3,
+      "source_page": "notes_page_2.jpg",
+      "source_line": 12
+    }
+  ],
+  "T": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_84/1.png",
+      "width": 32,
+      "height": 18,
+      "aspect_ratio": 1.78,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 2
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_84/2.png",
+      "width": 24,
+      "height": 16,
+      "aspect_ratio": 1.5,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 4
+    }
+  ],
+  "W": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_87/1.png",
+      "width": 16,
+      "height": 18,
+      "aspect_ratio": 0.89,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 6
+    },
+    {
+      "variant_id": 2,
+      "path": "data/glyphs_v2/char_87/2.png",
+      "width": 16,
+      "height": 12,
+      "aspect_ratio": 1.33,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
+    }
+  ],
+  "I": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_73/1.png",
+      "width": 5,
+      "height": 15,
+      "aspect_ratio": 0.33,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 7
+    }
+  ],
+  ":": [
+    {
+      "variant_id": 1,
+      "path": "data/glyphs_v2/char_58/1.png",
+      "width": 8,
+      "height": 11,
+      "aspect_ratio": 0.73,
+      "source_page": "notes_page_3.jpg",
+      "source_line": 8
     }
   ],
   "A": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_65\\1.png",
+      "path": "data/glyphs_v2\\char_65\\1.png",
       "width": 13,
       "height": 14,
       "aspect_ratio": 0.93
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_65\\2.png",
+      "path": "data/glyphs_v2\\char_65\\2.png",
       "width": 9,
       "height": 18,
       "aspect_ratio": 0.5
     }
   ],
-  "g": [
+  "D": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_103\\1.png",
-      "width": 10,
-      "height": 12,
-      "aspect_ratio": 0.83
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_103\\2.png",
-      "width": 7,
-      "height": 22,
-      "aspect_ratio": 0.32
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_103\\3.png",
-      "width": 11,
-      "height": 22,
-      "aspect_ratio": 0.5
-    }
-  ],
-  "v": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_118\\1.png",
-      "width": 6,
-      "height": 8,
-      "aspect_ratio": 0.75
+      "path": "data/glyphs_v2\\char_68\\1.png",
+      "width": 19,
+      "height": 21,
+      "aspect_ratio": 0.9
     }
   ],
   "N": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_78\\1.png",
+      "path": "data/glyphs_v2\\char_78\\1.png",
       "width": 13,
       "height": 10,
       "aspect_ratio": 1.3
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_78\\2.png",
+      "path": "data/glyphs_v2\\char_78\\2.png",
       "width": 20,
       "height": 18,
       "aspect_ratio": 1.11
     }
   ],
-  "O": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_79\\1.png",
-      "width": 5,
-      "height": 27,
-      "aspect_ratio": 0.19
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_79\\2.png",
-      "width": 12,
-      "height": 23,
-      "aspect_ratio": 0.52
-    }
-  ],
   ",": [
     {
       "variant_id": 1,
-      "path": "data/glyphs\\char_44\\1.png",
+      "path": "data/glyphs_v2\\char_44\\1.png",
       "width": 7,
       "height": 8,
       "aspect_ratio": 0.88
     },
     {
       "variant_id": 2,
-      "path": "data/glyphs\\char_44\\2.png",
+      "path": "data/glyphs_v2\\char_44\\2.png",
       "width": 7,
       "height": 8,
       "aspect_ratio": 0.88
     },
     {
       "variant_id": 3,
-      "path": "data/glyphs\\char_44\\3.png",
+      "path": "data/glyphs_v2\\char_44\\3.png",
       "width": 8,
       "height": 9,
       "aspect_ratio": 0.89
-    }
-  ],
-  "u": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_117\\1.png",
-      "width": 4,
-      "height": 9,
-      "aspect_ratio": 0.44
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_117\\2.png",
-      "width": 7,
-      "height": 8,
-      "aspect_ratio": 0.88
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_117\\3.png",
-      "width": 5,
-      "height": 20,
-      "aspect_ratio": 0.25
-    }
-  ],
-  "y": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_121\\1.png",
-      "width": 4,
-      "height": 25,
-      "aspect_ratio": 0.16
-    }
-  ],
-  "s": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_115\\1.png",
-      "width": 7,
-      "height": 12,
-      "aspect_ratio": 0.58
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_115\\2.png",
-      "width": 7,
-      "height": 12,
-      "aspect_ratio": 0.58
-    },
-    {
-      "variant_id": 3,
-      "path": "data/glyphs\\char_115\\3.png",
-      "width": 8,
-      "height": 10,
-      "aspect_ratio": 0.8
-    },
-    {
-      "variant_id": 4,
-      "path": "data/glyphs\\char_115\\4.png",
-      "width": 3,
-      "height": 8,
-      "aspect_ratio": 0.38
-    },
-    {
-      "variant_id": 5,
-      "path": "data/glyphs\\char_115\\5.png",
-      "width": 18,
-      "height": 17,
-      "aspect_ratio": 1.06
-    },
-    {
-      "variant_id": 6,
-      "path": "data/glyphs\\char_115\\6.png",
-      "width": 5,
-      "height": 11,
-      "aspect_ratio": 0.45
-    },
-    {
-      "variant_id": 7,
-      "path": "data/glyphs\\char_115\\7.png",
-      "width": 9,
-      "height": 12,
-      "aspect_ratio": 0.75
-    },
-    {
-      "variant_id": 8,
-      "path": "data/glyphs\\char_115\\8.png",
-      "width": 8,
-      "height": 13,
-      "aspect_ratio": 0.62
-    }
-  ],
-  "d": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_100\\1.png",
-      "width": 4,
-      "height": 7,
-      "aspect_ratio": 0.57
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_100\\2.png",
-      "width": 8,
-      "height": 27,
-      "aspect_ratio": 0.3
-    }
-  ],
-  "h": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_104\\1.png",
-      "width": 7,
-      "height": 25,
-      "aspect_ratio": 0.28
-    }
-  ],
-  "-": [
-    {
-      "variant_id": 1,
-      "path": "data/glyphs\\char_45\\1.png",
-      "width": 8,
-      "height": 4,
-      "aspect_ratio": 2.0
-    },
-    {
-      "variant_id": 2,
-      "path": "data/glyphs\\char_45\\2.png",
-      "width": 8,
-      "height": 6,
-      "aspect_ratio": 1.33
     }
   ]
 }

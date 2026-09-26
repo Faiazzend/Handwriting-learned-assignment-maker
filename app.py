@@ -340,7 +340,7 @@ async def generate_assignment(req: GenerateRequest):
         layout = UnruledPageLayout(
             glyph_bank=extractor.index,
             synthesizer=synthesizer,
-            words_index_path=None
+            words_index_path="data/words_v2/words_index.json"
         )
 
         pages_data = layout.layout_document(

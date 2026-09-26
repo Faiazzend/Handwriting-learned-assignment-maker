@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 
 class GlyphExtractor:
-    def __init__(self, glyphs_dir="data/glyphs", index_file="data/glyphs/glyphs_index.json"):
+    def __init__(self, glyphs_dir="data/glyphs_v2", index_file="data/glyphs_v2/glyphs_index.json"):
         self.glyphs_dir = glyphs_dir
         self.index_file = index_file
         os.makedirs(self.glyphs_dir, exist_ok=True)
