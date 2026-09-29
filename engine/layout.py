@@ -95,12 +95,12 @@ class UnruledPageLayout:
         # Margins & spacing
         self.base_left_margin = 220
         self.base_right_margin = 220
-        self.base_top_margin = 260
-        self.base_bottom_margin = 260
-        self.base_line_height = 95
+        self.base_top_margin = 280
+        self.base_bottom_margin = 280
+        self.base_line_height = 110
 
-        # Initialize proportional scaler (2.0x scan-to-print scale)
-        self.scaler = ProportionalGlyphScaler(self.glyph_bank, base_scale=2.0)
+        # Initialize proportional scaler (3.0x scan-to-print scale for realistic human A4 handwriting)
+        self.scaler = ProportionalGlyphScaler(self.glyph_bank, base_scale=3.0)
 
         # N-gram aware variant selector — prevents visible repetition
         self.variant_selector = SmartVariantSelector(history_depth=3)
@@ -139,7 +139,7 @@ class UnruledPageLayout:
             extra_scale = 1.25 if heading_level == 1 else (1.15 if heading_level == 2 else 1.05)
 
         total_h = int(self.base_line_height * (1.3 if is_heading else 1.0))
-        baseline_y = int(total_h * 0.68)
+        baseline_y = int(total_h * 0.72)
 
         # ── Case 1: Check if whole word exists in authentic word bank ──
         # Split off trailing punctuation if present
@@ -157,14 +157,14 @@ class UnruledPageLayout:
                     raw_wimg = raw_wimg.crop(wbox)
 
                 # Scale word proportionally to line height
-                sf = 1.35 * extra_scale
-                nw = max(int(raw_wimg.width * sf), 8)
-                nh = max(int(raw_wimg.height * sf), 12)
+                sf = 2.3 * extra_scale
+                nw = max(int(raw_wimg.width * sf), 10)
+                nh = max(int(raw_wimg.height * sf), 15)
                 resized_wimg = raw_wimg.resize((nw, nh), Image.Resampling.LANCZOS)
 
                 # Anchor baseline based on descenders
                 has_descenders = bool(set("gjpqy") & set(word_key))
-                anchor_ratio = 0.62 if has_descenders else 0.86
+                anchor_ratio = 0.65 if has_descenders else 0.88
                 dest_y = baseline_y - int(nh * anchor_ratio)
                 dest_y = max(0, min(total_h - nh, dest_y))
 

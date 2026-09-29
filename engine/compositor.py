@@ -12,7 +12,9 @@ from PIL import Image, ImageFilter, ImageOps
 class CamScannerCompositor:
     INK_PALETTES = {
         "Royal Blue Ballpoint": (25, 55, 145),
+        "Royal Blue": (25, 55, 145),
         "Dark Gel Blue": (18, 35, 95),
+        "Gel Dark": (18, 35, 95),
         "Classic Black": (28, 28, 32),
         "Fountain Blue-Black": (20, 40, 75)
     }

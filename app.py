@@ -6,6 +6,7 @@ Handles note ingestion, glyph extraction, assignment generation, and PDF export.
 
 import os
 import io
+import time
 import json
 import uuid
 import base64
@@ -372,12 +373,31 @@ async def generate_assignment(req: GenerateRequest):
             )
             _rendered_pages.append(page_img)
 
-        # Save preview images
+        # Save web-optimized preview images and instant base64 data URIs
         preview_urls = []
+        preview_data = []
+        timestamp = int(time.time() * 1000)
+
         for i, img in enumerate(_rendered_pages):
-            preview_path = f"temp/preview_{i}.png"
-            img.save(preview_path, format="PNG")
-            preview_urls.append(f"/api/preview/{i}")
+            # 1. Full-resolution PNG for high-fidelity archival
+            full_path = f"temp/preview_{i}_full.png"
+            img.save(full_path, format="PNG")
+
+            # 2. Web-optimized preview (1400px width, quality=90, ~180KB instead of 15MB)
+            prev_w = min(1400, img.width)
+            prev_h = int(img.height * (prev_w / float(img.width)))
+            web_preview = img.resize((prev_w, prev_h), Image.Resampling.LANCZOS)
+            
+            # Save web JPEG
+            web_path = f"temp/preview_{i}.jpg"
+            web_preview.save(web_path, format="JPEG", quality=90, optimize=True)
+            preview_urls.append(f"/api/preview/{i}?t={timestamp}")
+
+            # 3. Base64 Data URI for 0-second instant frontend preview (no network lag, no caching bugs)
+            b64_buf = io.BytesIO()
+            web_preview.save(b64_buf, format="JPEG", quality=88, optimize=True)
+            b64_str = base64.b64encode(b64_buf.getvalue()).decode("ascii")
+            preview_data.append(f"data:image/jpeg;base64,{b64_str}")
 
         # Generate PDF
         _last_pdf_path = pdf_builder.create_pdf(_rendered_pages, filename="Handwritten_Assignment.pdf")
@@ -385,6 +405,7 @@ async def generate_assignment(req: GenerateRequest):
         return {
             "page_count": len(_rendered_pages),
             "preview_urls": preview_urls,
+            "preview_data": preview_data,
             "pdf_url": "/api/download"
         }
 
@@ -409,9 +430,21 @@ async def generate_assignment(req: GenerateRequest):
 
 @app.get("/api/preview/{page_num}")
 async def get_preview(page_num: int):
-    preview_path = f"temp/preview_{page_num}.png"
-    if os.path.exists(preview_path):
-        return FileResponse(preview_path, media_type="image/png")
+    jpg_path = f"temp/preview_{page_num}.jpg"
+    png_path = f"temp/preview_{page_num}.png"
+    target = jpg_path if os.path.exists(jpg_path) else (png_path if os.path.exists(png_path) else None)
+
+    if target:
+        media = "image/jpeg" if target.endswith(".jpg") else "image/png"
+        return FileResponse(
+            target,
+            media_type=media,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0"
+            }
+        )
     raise HTTPException(status_code=404, detail="Preview not found. Generate first.")
 
 @app.get("/api/download")
