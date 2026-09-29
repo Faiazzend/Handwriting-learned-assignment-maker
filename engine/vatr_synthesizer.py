@@ -312,7 +312,7 @@ class HandwritingSynthesizer:
             return self._generate_procedural(text, target_height)
 
     def _generate_procedural(self, text, target_height):
-        """Fallback: Generate using glyph bank compositing or synthetic font."""
+        """Fallback: Generate using glyph bank compositing. No synthetic fonts ever."""
         total_width = 0
         char_images = []
 
@@ -330,8 +330,8 @@ class HandwritingSynthesizer:
                         pass
 
             if glyph_img is None:
-                # Synthetic fallback
-                glyph_img = self._make_synthetic_char(ch)
+                # Strict: skip unscanned characters instead of synthetic fallback
+                continue
 
             # Scale to target height
             if glyph_img.height != target_height and glyph_img.height > 0:
@@ -341,6 +341,9 @@ class HandwritingSynthesizer:
 
             char_images.append(glyph_img)
             total_width += glyph_img.width + random.randint(1, 3)
+
+        if not char_images:
+            return Image.new("RGBA", (20, target_height), (0, 0, 0, 0))
 
         # Composite all characters side by side
         word_img = Image.new("RGBA", (total_width + 5, target_height), (0, 0, 0, 0))

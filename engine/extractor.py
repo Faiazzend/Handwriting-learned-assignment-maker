@@ -128,6 +128,19 @@ class GlyphExtractor:
         if not is_v:
             return None
 
+        # Deduplication: compute perceptual hash, skip near-duplicate variants
+        resized_for_hash = cv2.resize(glyph_crop_binary, (16, 16), interpolation=cv2.INTER_AREA)
+        _, hash_bin = cv2.threshold(resized_for_hash, 127, 1, cv2.THRESH_BINARY)
+        new_hash = hash_bin.flatten().tolist()
+
+        if char_label in self.index:
+            for existing_var in self.index[char_label]:
+                existing_hash = existing_var.get("phash")
+                if existing_hash and len(existing_hash) == len(new_hash):
+                    hamming = sum(a != b for a, b in zip(new_hash, existing_hash))
+                    if hamming < 12:  # near-duplicate threshold
+                        return None
+
         char_dir = os.path.join(self.glyphs_dir, f"char_{ord(char_label) if len(char_label) == 1 else 'bigram_' + char_label}")
         os.makedirs(char_dir, exist_ok=True)
         
@@ -152,7 +165,8 @@ class GlyphExtractor:
             "path": filepath,
             "width": w,
             "height": h,
-            "aspect_ratio": round(w / float(h), 2)
+            "aspect_ratio": round(w / float(h), 2),
+            "phash": new_hash
         }
         if metadata:
             record.update(metadata)
@@ -165,6 +179,7 @@ class GlyphExtractor:
         """
         Saves an authentic cursive whole-word crop as transparent RGBA PNG
         and records it in the words index.
+        Validates word label and deduplicates against existing crops.
         """
         if word_crop_binary is None or len(word_crop_binary.shape) < 2:
             return None
@@ -172,8 +187,10 @@ class GlyphExtractor:
         if w < 10 or h < 8 or np.count_nonzero(word_crop_binary) == 0:
             return None
 
-        clean_label = word_label.strip(".,;:!?'\"-")
-        if not clean_label:
+        # Validate and normalize word label
+        from engine.word_validator import validate_and_normalize_word
+        is_valid_w, clean_label = validate_and_normalize_word(word_label)
+        if not is_valid_w or not clean_label:
             return None
 
         words_dir = "data/words_v2"
@@ -188,10 +205,20 @@ class GlyphExtractor:
             except Exception:
                 words_index = []
 
-        # Check existing variants
+        # Deduplication: check perceptual hash against existing word crops
         existing = [w for w in words_index if w.get("label", "").lower() == clean_label.lower()]
-        var_id = len(existing) + 1
+        resized_for_hash = cv2.resize(word_crop_binary, (32, 16), interpolation=cv2.INTER_AREA)
+        _, hash_bin = cv2.threshold(resized_for_hash, 127, 1, cv2.THRESH_BINARY)
+        new_hash = hash_bin.flatten().tolist()
 
+        for existing_w in existing:
+            existing_hash = existing_w.get("phash")
+            if existing_hash and len(existing_hash) == len(new_hash):
+                hamming = sum(a != b for a, b in zip(new_hash, existing_hash))
+                if hamming < 15:
+                    return None  # duplicate crop
+
+        var_id = len(existing) + 1
         safe_name = "".join(c for c in clean_label if c.isalnum() or c in "_-")
         if not safe_name:
             safe_name = "word"
@@ -210,7 +237,8 @@ class GlyphExtractor:
             "path": filepath,
             "width": int(w),
             "height": int(h),
-            "aspect_ratio": round(float(w) / float(h), 2)
+            "aspect_ratio": round(float(w) / float(h), 2),
+            "phash": new_hash
         }
         if metadata:
             record.update(metadata)

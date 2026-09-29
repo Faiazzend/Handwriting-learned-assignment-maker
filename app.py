@@ -28,6 +28,7 @@ from engine.compositor import CamScannerCompositor
 from engine.pdf_builder import AssignmentPDFBuilder
 from engine.surya_reader import HandwritingReader
 from engine.vatr_synthesizer import HandwritingSynthesizer
+from engine.stroke_augmentor import augment_glyph_bank
 from engine.validator import validate_text_coverage, get_required_characters, MissingCharactersError
 
 # ──────────────────────────────────────────────────────────────────────
@@ -258,8 +259,14 @@ async def extract_glyphs(req: ExtractRequest):
     # Update synthesizer's glyph bank
     synthesizer.glyph_bank = extractor.index
 
+    # Auto-augment low-variant characters to minimum 5 variants
+    aug_count = augment_glyph_bank(extractor.index, extractor.glyphs_dir, min_variants=5)
+    if aug_count > 0:
+        extractor._save_index()
+        logger.info(f"Auto-augmented {aug_count} AI variants for low-coverage characters")
+
     stats = extractor.get_stats()
-    return {"registered_count": registered_count, "stats": stats}
+    return {"registered_count": registered_count, "augmented_count": aug_count, "stats": stats}
 
 @app.post("/api/extract-all")
 async def extract_all_pages():
@@ -277,8 +284,14 @@ async def extract_all_pages():
             total_new += count
 
     synthesizer.glyph_bank = extractor.index
+
+    # Auto-augment low-variant characters
+    aug_count = augment_glyph_bank(extractor.index, extractor.glyphs_dir, min_variants=5)
+    if aug_count > 0:
+        extractor._save_index()
+
     stats = extractor.get_stats()
-    return {"total_extracted": total_new, "stats": stats}
+    return {"total_extracted": total_new, "augmented_count": aug_count, "stats": stats}
 
 @app.post("/api/train-neural")
 async def train_neural_model():

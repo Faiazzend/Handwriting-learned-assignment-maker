@@ -41,18 +41,42 @@ class CamScannerCompositor:
             glyph_img = item["image"]
             gx, gy = item["x"], item["y"]
 
-            # Tint glyph with selected ink color & subtle pressure variation
+            # Bounds clamping — prevent alpha_composite crash
+            gw, gh = glyph_img.size
+            if gx < 0:
+                glyph_img = glyph_img.crop((-gx, 0, gw, gh))
+                gx = 0
+            if gy < 0:
+                glyph_img = glyph_img.crop((0, -gy, glyph_img.width, glyph_img.height))
+                gy = 0
+            gw, gh = glyph_img.size
+            if gx + gw > self.page_width:
+                glyph_img = glyph_img.crop((0, 0, self.page_width - gx, gh))
+            if gy + gh > self.page_height:
+                glyph_img = glyph_img.crop((0, 0, glyph_img.width, self.page_height - gy))
+            if glyph_img.width <= 0 or glyph_img.height <= 0:
+                continue
+
+            # Tint glyph with selected ink color & per-pixel pressure variation
             glyph_np = np.array(glyph_img)
             if glyph_np.shape[2] == 4:
-                alpha = glyph_np[:, :, 3]
-                pressure = random.uniform(0.88, 1.0)
-                
+                alpha = glyph_np[:, :, 3].astype(np.float32)
+
+                # Per-pixel pressure: heavier at left (pen-down), lighter at right (pen-lift)
+                gh_px, gw_px = alpha.shape
+                start_p = random.uniform(0.90, 1.0)
+                end_p = random.uniform(0.72, 0.88)
+                h_gradient = np.linspace(start_p, end_p, gw_px)
+                # Add micro-noise for natural variation
+                noise = np.random.normal(0, 0.02, (gh_px, gw_px)).astype(np.float32)
+                pressure_mask = np.clip(np.tile(h_gradient, (gh_px, 1)) + noise, 0.6, 1.0)
+
                 # Tint RGB channels with ink color
                 tinted = np.zeros_like(glyph_np)
                 tinted[:, :, 0] = target_color[0]
                 tinted[:, :, 1] = target_color[1]
                 tinted[:, :, 2] = target_color[2]
-                tinted[:, :, 3] = (alpha * pressure).astype(np.uint8)
+                tinted[:, :, 3] = (alpha * pressure_mask).astype(np.uint8)
                 
                 tinted_pil = Image.fromarray(tinted, mode="RGBA")
                 ink_layer.alpha_composite(tinted_pil, dest=(gx, gy))

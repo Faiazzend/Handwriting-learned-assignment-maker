@@ -18,6 +18,7 @@ import numpy as np
 from PIL import Image
 
 from engine.validator import validate_text_coverage, MissingCharactersError
+from engine.stroke_augmentor import SmartVariantSelector
 
 # Typographical character classifications
 X_HEIGHT_CHARS = set("acemnorsuvwxz")
@@ -101,9 +102,12 @@ class UnruledPageLayout:
         # Initialize proportional scaler (2.0x scan-to-print scale)
         self.scaler = ProportionalGlyphScaler(self.glyph_bank, base_scale=2.0)
 
+        # N-gram aware variant selector — prevents visible repetition
+        self.variant_selector = SmartVariantSelector(history_depth=3)
+
     def _get_glyph_for_char(self, char, last_variant_id=None):
         """
-        Retrieves an authentic scanned glyph variant.
+        Retrieves an authentic scanned glyph variant using N-gram aware selection.
         STRICT: Never creates synthetic fallbacks.
         """
         variants = self.glyph_bank.get(char, [])
@@ -115,15 +119,14 @@ class UnruledPageLayout:
         if not valid_variants:
             raise MissingCharactersError(missing_characters=[char], available_count=len(self.glyph_bank))
 
-        # Avoid repeating the same variant consecutively
-        if len(valid_variants) > 1 and last_variant_id is not None:
-            pool = [v for v in valid_variants if v.get("variant_id") != last_variant_id]
-            selected = random.choice(pool) if pool else random.choice(valid_variants)
-        else:
+        # Smart N-gram aware selection
+        selected, vid = self.variant_selector.select(char, valid_variants)
+        if selected is None:
             selected = random.choice(valid_variants)
+            vid = selected.get("variant_id")
 
         img = Image.open(selected["path"]).convert("RGBA")
-        return img, selected.get("variant_id")
+        return img, vid
 
     def _generate_word_image(self, word, is_heading=False, heading_level=0):
         """
@@ -210,17 +213,31 @@ class UnruledPageLayout:
         word_canvas = Image.new("RGBA", (total_w, total_h), (0, 0, 0, 0))
         x_curr = 2
 
-        for ch, img, y_off in char_items:
+        # Progressive slant drift within word (simulates wrist angle shift)
+        slant_drift = random.uniform(-0.15, 0.15)  # degrees per character
+        cumulative_slant = 0.0
+
+        for idx, (ch, img, y_off) in enumerate(char_items):
+            # Vertical jitter + progressive drift
             jitter_y = random.choice([-1, 0, 0, 1])
-            dest_y = baseline_y + y_off + jitter_y
+            cumulative_slant += slant_drift
+            drift_y = int(cumulative_slant)
+
+            dest_y = baseline_y + y_off + jitter_y + drift_y
             dest_y = max(0, min(total_h - img.height, dest_y))
             word_canvas.alpha_composite(img, dest=(x_curr, dest_y))
 
-            kern = base_kern + random.choice([-1, 0, 0, 1])
+            # Variable kerning — tighter after narrow chars, wider after wide chars
+            kern = base_kern + random.choice([-1, 0, 0, 0, 1])
             if ch in "ilt.,":
-                kern = max(1, kern - 1)
+                kern = max(1, kern - 2)
             elif ch in "mwMW":
-                kern += 1
+                kern += 2
+            # Ligature-like tightening for common pairs
+            if idx + 1 < len(char_items):
+                next_ch = char_items[idx + 1][0]
+                if (ch, next_ch) in [('a', 't'), ('i', 'n'), ('e', 'r'), ('t', 'h'), ('o', 'n'), ('a', 'n'), ('e', 'n')]:
+                    kern = max(0, kern - 1)
 
             x_curr += img.width + kern
 

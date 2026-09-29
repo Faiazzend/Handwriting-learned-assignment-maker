@@ -11,6 +11,7 @@ import numpy as np
 from PIL import Image
 
 from engine.glyph_quality import is_valid_single_glyph
+from engine.word_validator import validate_and_normalize_word
 
 logger = logging.getLogger(__name__)
 
@@ -147,15 +148,16 @@ class HandwritingReader:
                                         registered_count += 1
                             continue
 
-                        # B) High-confidence whole cursive word preservation
-                        clean_word = text.strip(".,;:!?'\"-")
-                        if len(clean_word) >= 2 and score >= 0.65:
-                            coords = cv2.findNonZero(word_bin)
-                            if coords is not None:
-                                wx, wy, ww, wh = cv2.boundingRect(coords)
-                                w_crop = word_bin[wy:wy+wh, wx:wx+ww]
-                                if hasattr(extractor, 'register_word'):
-                                    extractor.register_word(clean_word, w_crop, metadata={"score": round(score, 2)})
+                        # B) High-confidence whole cursive word preservation with validation
+                        if score >= 0.65:
+                            is_valid_w, norm_word = validate_and_normalize_word(text, confidence=score)
+                            if is_valid_w and norm_word:
+                                coords = cv2.findNonZero(word_bin)
+                                if coords is not None:
+                                    wx, wy, ww, wh = cv2.boundingRect(coords)
+                                    w_crop = word_bin[wy:wy+wh, wx:wx+ww]
+                                    if hasattr(extractor, 'register_word'):
+                                        extractor.register_word(norm_word, w_crop, metadata={"score": round(score, 2), "ocr_raw": text})
 
                         # C) Trailing punctuation extraction (. or ,)
                         if text.endswith(".") and word_bin.shape[1] > 15:
