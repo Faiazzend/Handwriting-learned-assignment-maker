@@ -118,5 +118,715 @@
     "height": 43,
     "page": 3,
     "sim": 0.78
+  },
+  {
+    "label": "Early",
+    "path": "data/words/w_p1_L1_Early_1.png",
+    "width": 45,
+    "height": 44,
+    "page": 1
+  },
+  {
+    "label": "Early",
+    "path": "data/words/w_p3_L2_Early_2.png",
+    "width": 45,
+    "height": 40,
+    "page": 3
+  },
+  {
+    "label": "days",
+    "path": "data/words/w_p1_L1_days_1.png",
+    "width": 42,
+    "height": 37,
+    "page": 1
+  },
+  {
+    "label": "Power",
+    "path": "data/words/w_p1_L1_Power_1.png",
+    "width": 61,
+    "height": 18,
+    "page": 1
+  },
+  {
+    "label": "was",
+    "path": "data/words/w_p1_L1_was_1.png",
+    "width": 30,
+    "height": 19,
+    "page": 1
+  },
+  {
+    "label": "was",
+    "path": "data/words/w_p3_L15_was_2.png",
+    "width": 38,
+    "height": 41,
+    "page": 3
+  },
+  {
+    "label": "fragmented",
+    "path": "data/words/w_p1_L1_fragmented_1.png",
+    "width": 90,
+    "height": 44,
+    "page": 1
+  },
+  {
+    "label": "They",
+    "path": "data/words/w_p1_L2_They_1.png",
+    "width": 61,
+    "height": 35,
+    "page": 1
+  },
+  {
+    "label": "gained",
+    "path": "data/words/w_p1_L2_gained_1.png",
+    "width": 89,
+    "height": 42,
+    "page": 1
+  },
+  {
+    "label": "advantage",
+    "path": "data/words/w_p1_L2_advantage_1.png",
+    "width": 42,
+    "height": 36,
+    "page": 1
+  },
+  {
+    "label": "being",
+    "path": "data/words/w_p1_L2_being_1.png",
+    "width": 84,
+    "height": 37,
+    "page": 1
+  },
+  {
+    "label": "Established",
+    "path": "data/words/w_p1_L3_Established_1.png",
+    "width": 101,
+    "height": 34,
+    "page": 1
+  },
+  {
+    "label": "administrative",
+    "path": "data/words/w_p1_L3_administrative_1.png",
+    "width": 142,
+    "height": 28,
+    "page": 1
+  },
+  {
+    "label": "networks",
+    "path": "data/words/w_p1_L3_networks_1.png",
+    "width": 79,
+    "height": 32,
+    "page": 1
+  },
+  {
+    "label": "Gradually",
+    "path": "data/words/w_p1_L4_Gradually_1.png",
+    "width": 104,
+    "height": 26,
+    "page": 1
+  },
+  {
+    "label": "State",
+    "path": "data/words/w_p1_L8_State_1.png",
+    "width": 52,
+    "height": 24,
+    "page": 1
+  },
+  {
+    "label": "state",
+    "path": "data/words/w_p3_L7_state_2.png",
+    "width": 52,
+    "height": 40,
+    "page": 3
+  },
+  {
+    "label": "state",
+    "path": "data/words/w_p3_L10_state_3.png",
+    "width": 46,
+    "height": 20,
+    "page": 3
+  },
+  {
+    "label": "State",
+    "path": "data/words/w_p3_L16_State_4.png",
+    "width": 70,
+    "height": 53,
+    "page": 3
+  },
+  {
+    "label": "came",
+    "path": "data/words/w_p1_L8_came_1.png",
+    "width": 114,
+    "height": 35,
+    "page": 1
+  },
+  {
+    "label": "from",
+    "path": "data/words/w_p1_L8_from_1.png",
+    "width": 114,
+    "height": 41,
+    "page": 1
+  },
+  {
+    "label": "from",
+    "path": "data/words/w_p3_L7_from_2.png",
+    "width": 53,
+    "height": 23,
+    "page": 3
+  },
+  {
+    "label": "of",
+    "path": "data/words/w_p1_L8_of_1.png",
+    "width": 73,
+    "height": 47,
+    "page": 1
+  },
+  {
+    "label": "of",
+    "path": "data/words/w_p1_L9_of_2.png",
+    "width": 103,
+    "height": 53,
+    "page": 1
+  },
+  {
+    "label": "of",
+    "path": "data/words/w_p3_L10_of_3.png",
+    "width": 17,
+    "height": 38,
+    "page": 3
+  },
+  {
+    "label": "of",
+    "path": "data/words/w_p3_L16_of_4.png",
+    "width": 24,
+    "height": 44,
+    "page": 3
+  },
+  {
+    "label": "violence",
+    "path": "data/words/w_p1_L8_violence_1.png",
+    "width": 92,
+    "height": 34,
+    "page": 1
+  },
+  {
+    "label": "violence",
+    "path": "data/words/w_p3_L13_violence_2.png",
+    "width": 78,
+    "height": 48,
+    "page": 3
+  },
+  {
+    "label": "violence",
+    "path": "data/words/w_p3_L15_violence_3.png",
+    "width": 84,
+    "height": 41,
+    "page": 3
+  },
+  {
+    "label": "Creation",
+    "path": "data/words/w_p1_L9_Creation_1.png",
+    "width": 38,
+    "height": 60,
+    "page": 1
+  },
+  {
+    "label": "bureaucratic",
+    "path": "data/words/w_p1_L9_bureaucratic_1.png",
+    "width": 71,
+    "height": 69,
+    "page": 1
+  },
+  {
+    "label": "systems",
+    "path": "data/words/w_p1_L9_systems_1.png",
+    "width": 46,
+    "height": 64,
+    "page": 1
+  },
+  {
+    "label": "kept",
+    "path": "data/words/w_p1_L9_kept_1.png",
+    "width": 112,
+    "height": 63,
+    "page": 1
+  },
+  {
+    "label": "In",
+    "path": "data/words/w_p1_L10_In_1.png",
+    "width": 72,
+    "height": 49,
+    "page": 1
+  },
+  {
+    "label": "reality",
+    "path": "data/words/w_p1_L10_reality_1.png",
+    "width": 87,
+    "height": 43,
+    "page": 1
+  },
+  {
+    "label": "is",
+    "path": "data/words/w_p1_L10_is_1.png",
+    "width": 30,
+    "height": 16,
+    "page": 1
+  },
+  {
+    "label": "is",
+    "path": "data/words/w_p3_L12_is_2.png",
+    "width": 19,
+    "height": 38,
+    "page": 3
+  },
+  {
+    "label": "is",
+    "path": "data/words/w_p3_L16_is_3.png",
+    "width": 13,
+    "height": 24,
+    "page": 3
+  },
+  {
+    "label": "not",
+    "path": "data/words/w_p1_L10_not_1.png",
+    "width": 93,
+    "height": 21,
+    "page": 1
+  },
+  {
+    "label": "abstract",
+    "path": "data/words/w_p1_L10_abstract_1.png",
+    "width": 80,
+    "height": 30,
+    "page": 1
+  },
+  {
+    "label": "Different",
+    "path": "data/words/w_p2_L3_Different_1.png",
+    "width": 50,
+    "height": 25,
+    "page": 2
+  },
+  {
+    "label": "people",
+    "path": "data/words/w_p2_L3_people_1.png",
+    "width": 77,
+    "height": 31,
+    "page": 2
+  },
+  {
+    "label": "this",
+    "path": "data/words/w_p2_L3_this_1.png",
+    "width": 64,
+    "height": 35,
+    "page": 2
+  },
+  {
+    "label": "this",
+    "path": "data/words/w_p3_L10_this_2.png",
+    "width": 34,
+    "height": 26,
+    "page": 3
+  },
+  {
+    "label": "theory",
+    "path": "data/words/w_p2_L3_theory_1.png",
+    "width": 105,
+    "height": 45,
+    "page": 2
+  },
+  {
+    "label": "europe",
+    "path": "data/words/w_p3_L2_europe_1.png",
+    "width": 58,
+    "height": 19,
+    "page": 3
+  },
+  {
+    "label": "many",
+    "path": "data/words/w_p3_L2_many_1.png",
+    "width": 45,
+    "height": 33,
+    "page": 3
+  },
+  {
+    "label": "struggled",
+    "path": "data/words/w_p3_L2_struggled_1.png",
+    "width": 77,
+    "height": 30,
+    "page": 3
+  },
+  {
+    "label": "Those",
+    "path": "data/words/w_p3_L3_Those_1.png",
+    "width": 41,
+    "height": 59,
+    "page": 3
+  },
+  {
+    "label": "those",
+    "path": "data/words/w_p3_L5_those_2.png",
+    "width": 31,
+    "height": 10,
+    "page": 3
+  },
+  {
+    "label": "who",
+    "path": "data/words/w_p3_L3_who_1.png",
+    "width": 30,
+    "height": 54,
+    "page": 3
+  },
+  {
+    "label": "organized",
+    "path": "data/words/w_p3_L3_organized_1.png",
+    "width": 88,
+    "height": 55,
+    "page": 3
+  },
+  {
+    "label": "had",
+    "path": "data/words/w_p3_L3_had_1.png",
+    "width": 29,
+    "height": 21,
+    "page": 3
+  },
+  {
+    "label": "the",
+    "path": "data/words/w_p3_L3_the_1.png",
+    "width": 22,
+    "height": 24,
+    "page": 3
+  },
+  {
+    "label": "upper-hand",
+    "path": "data/words/w_p3_L3_upper-hand_1.png",
+    "width": 51,
+    "height": 23,
+    "page": 3
+  },
+  {
+    "label": "To",
+    "path": "data/words/w_p3_L4_To_1.png",
+    "width": 28,
+    "height": 58,
+    "page": 3
+  },
+  {
+    "label": "to",
+    "path": "data/words/w_p3_L10_to_2.png",
+    "width": 19,
+    "height": 18,
+    "page": 3
+  },
+  {
+    "label": "sustain",
+    "path": "data/words/w_p3_L4_sustain_1.png",
+    "width": 180,
+    "height": 65,
+    "page": 3
+  },
+  {
+    "label": "for",
+    "path": "data/words/w_p3_L4_for_1.png",
+    "width": 79,
+    "height": 47,
+    "page": 3
+  },
+  {
+    "label": "Over-time",
+    "path": "data/words/w_p3_L5_Over-time_1.png",
+    "width": 178,
+    "height": 57,
+    "page": 3
+  },
+  {
+    "label": "war-making",
+    "path": "data/words/w_p3_L5_war-making_1.png",
+    "width": 62,
+    "height": 70,
+    "page": 3
+  },
+  {
+    "label": "efforts",
+    "path": "data/words/w_p3_L5_efforts_1.png",
+    "width": 54,
+    "height": 56,
+    "page": 3
+  },
+  {
+    "label": "turned",
+    "path": "data/words/w_p3_L5_turned_1.png",
+    "width": 50,
+    "height": 25,
+    "page": 3
+  },
+  {
+    "label": "into",
+    "path": "data/words/w_p3_L5_into_1.png",
+    "width": 30,
+    "height": 22,
+    "page": 3
+  },
+  {
+    "label": "Therefore",
+    "path": "data/words/w_p3_L7_Therefore_1.png",
+    "width": 71,
+    "height": 45,
+    "page": 3
+  },
+  {
+    "label": "didn't",
+    "path": "data/words/w_p3_L7_didn't_1.png",
+    "width": 27,
+    "height": 34,
+    "page": 3
+  },
+  {
+    "label": "originate",
+    "path": "data/words/w_p3_L7_originate_1.png",
+    "width": 43,
+    "height": 41,
+    "page": 3
+  },
+  {
+    "label": "Nature",
+    "path": "data/words/w_p3_L10_Nature_1.png",
+    "width": 64,
+    "height": 25,
+    "page": 3
+  },
+  {
+    "label": "thus",
+    "path": "data/words/w_p3_L10_thus_1.png",
+    "width": 31,
+    "height": 22,
+    "page": 3
+  },
+  {
+    "label": "lies",
+    "path": "data/words/w_p3_L10_lies_1.png",
+    "width": 38,
+    "height": 20,
+    "page": 3
+  },
+  {
+    "label": "deeply",
+    "path": "data/words/w_p3_L10_deeply_1.png",
+    "width": 73,
+    "height": 34,
+    "page": 3
+  },
+  {
+    "label": "tied",
+    "path": "data/words/w_p3_L10_tied_1.png",
+    "width": 35,
+    "height": 27,
+    "page": 3
+  },
+  {
+    "label": "It",
+    "path": "data/words/w_p3_L12_It_1.png",
+    "width": 34,
+    "height": 22,
+    "page": 3
+  },
+  {
+    "label": "an",
+    "path": "data/words/w_p3_L12_an_1.png",
+    "width": 24,
+    "height": 9,
+    "page": 3
+  },
+  {
+    "label": "organization",
+    "path": "data/words/w_p3_L12_organization_1.png",
+    "width": 103,
+    "height": 41,
+    "page": 3
+  },
+  {
+    "label": "that",
+    "path": "data/words/w_p3_L12_that_1.png",
+    "width": 32,
+    "height": 19,
+    "page": 3
+  },
+  {
+    "label": "claims",
+    "path": "data/words/w_p3_L12_claims_1.png",
+    "width": 53,
+    "height": 16,
+    "page": 3
+  },
+  {
+    "label": "&",
+    "path": "data/words/w_p3_L12_&_1.png",
+    "width": 20,
+    "height": 46,
+    "page": 3
+  },
+  {
+    "label": "&",
+    "path": "data/words/w_p3_L15_&_2.png",
+    "width": 21,
+    "height": 46,
+    "page": 3
+  },
+  {
+    "label": "monopolizes",
+    "path": "data/words/w_p3_L12_monopolizes_1.png",
+    "width": 97,
+    "height": 32,
+    "page": 3
+  },
+  {
+    "label": "legitimate",
+    "path": "data/words/w_p3_L13_legitimate_1.png",
+    "width": 97,
+    "height": 38,
+    "page": 3
+  },
+  {
+    "label": "over",
+    "path": "data/words/w_p3_L13_over_1.png",
+    "width": 41,
+    "height": 13,
+    "page": 3
+  },
+  {
+    "label": "a",
+    "path": "data/words/w_p3_L13_a_1.png",
+    "width": 14,
+    "height": 13,
+    "page": 3
+  },
+  {
+    "label": "a",
+    "path": "data/words/w_p3_L16_a_2.png",
+    "width": 15,
+    "height": 13,
+    "page": 3
+  },
+  {
+    "label": "territory",
+    "path": "data/words/w_p3_L13_territory_1.png",
+    "width": 100,
+    "height": 69,
+    "page": 3
+  },
+  {
+    "label": "after",
+    "path": "data/words/w_p3_L15_after_1.png",
+    "width": 50,
+    "height": 46,
+    "page": 3
+  },
+  {
+    "label": "contained",
+    "path": "data/words/w_p3_L15_contained_1.png",
+    "width": 85,
+    "height": 24,
+    "page": 3
+  },
+  {
+    "label": "concentrated",
+    "path": "data/words/w_p3_L15_concentrated_1.png",
+    "width": 112,
+    "height": 44,
+    "page": 3
+  },
+  {
+    "label": "fundamentally",
+    "path": "data/words/w_p3_L16_fundamentally_1.png",
+    "width": 141,
+    "height": 52,
+    "page": 3
+  },
+  {
+    "label": "product",
+    "path": "data/words/w_p3_L16_product_1.png",
+    "width": 69,
+    "height": 61,
+    "page": 3
+  },
+  {
+    "label": "ane.. mode , becanje. People",
+    "path": "data/words_v2/w_anemodebecanjePeople_1.png",
+    "width": 317,
+    "height": 43,
+    "aspect_ratio": 7.37,
+    "score": 0.75
+  },
+  {
+    "label": "agnee",
+    "path": "data/words_v2/w_agnee_1.png",
+    "width": 78,
+    "height": 38,
+    "aspect_ratio": 2.05,
+    "score": 0.76
+  },
+  {
+    "label": "pesple",
+    "path": "data/words_v2/w_pesple_1.png",
+    "width": 50,
+    "height": 20,
+    "aspect_ratio": 2.5,
+    "score": 0.78
+  },
+  {
+    "label": "people",
+    "path": "data/words_v2/w_people_6.png",
+    "width": 62,
+    "height": 26,
+    "aspect_ratio": 2.38,
+    "score": 0.82
+  },
+  {
+    "label": "pesplerufenprat",
+    "path": "data/words_v2/w_pesplerufenprat_1.png",
+    "width": 154,
+    "height": 34,
+    "aspect_ratio": 4.53,
+    "score": 0.76
+  },
+  {
+    "label": "comtnact",
+    "path": "data/words_v2/w_comtnact_1.png",
+    "width": 106,
+    "height": 25,
+    "aspect_ratio": 4.24,
+    "score": 0.65
+  },
+  {
+    "label": "woturpeople",
+    "path": "data/words_v2/w_woturpeople_1.png",
+    "width": 138,
+    "height": 28,
+    "aspect_ratio": 4.93,
+    "score": 0.76
+  },
+  {
+    "label": "acceprpolihical",
+    "path": "data/words_v2/w_acceprpolihical_1.png",
+    "width": 177,
+    "height": 41,
+    "aspect_ratio": 4.32,
+    "score": 0.81
+  },
+  {
+    "label": "model",
+    "path": "data/words_v2/w_model_2.png",
+    "width": 72,
+    "height": 33,
+    "aspect_ratio": 2.18,
+    "score": 0.77
+  },
+  {
+    "label": "people",
+    "path": "data/words_v2/w_people_7.png",
+    "width": 65,
+    "height": 20,
+    "aspect_ratio": 3.25,
+    "score": 0.77
   }
 ]

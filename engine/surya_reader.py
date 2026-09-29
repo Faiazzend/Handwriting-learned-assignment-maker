@@ -10,6 +10,8 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from engine.glyph_quality import is_valid_single_glyph
+
 logger = logging.getLogger(__name__)
 
 # Check backends
@@ -78,11 +80,33 @@ class HandwritingReader:
 
     def read_and_align(self, img_bgr, binary_mask, extractor, line_ranges=None):
         """
-        Reads handwriting and extracts individual character crops into the glyph bank.
+        Smart handwriting reader & extractor:
+        1. Extracts bullet arrows (→) from margin.
+        2. RapidOCR detection with confidence filtering.
+        3. High-confidence cursive whole words saved intact to word bank.
+        4. Validates isolated single characters with strict quality gates.
+        5. Extracts disconnected leading capital letters.
+        6. Extracts punctuation (. and ,).
+        7. Strict validation: zero corrupt/fragmented vertical slices.
         Returns the number of registered glyphs.
         """
         registered_count = 0
 
+        # Step 1: Scan margin for bullet arrows (→)
+        if binary_mask is not None and binary_mask.shape[1] > 140:
+            margin = binary_mask[:, :140]
+            contours, _ = cv2.findContours(margin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            for c in contours:
+                cx, cy, cw, ch = cv2.boundingRect(c)
+                if 18 <= cw <= 80 and 8 <= ch <= 35 and (cw / float(ch) >= 1.25):
+                    arr_crop = margin[cy:cy+ch, cx:cx+cw]
+                    is_v, _ = is_valid_single_glyph(arr_crop, "→", strict=True)
+                    if is_v:
+                        rec = extractor.register_glyph("→", arr_crop)
+                        if rec:
+                            registered_count += 1
+
+        # Step 2: OCR-assisted character and word extraction
         if self.backend == "rapidocr" and self._rapid_ocr:
             try:
                 results, _ = self._rapid_ocr(img_bgr)
@@ -90,7 +114,11 @@ class HandwritingReader:
                     for item in results:
                         box = np.array(item[0], dtype=np.int32)
                         text = item[1].strip()
-                        
+                        score = float(item[2]) if len(item) > 2 else 0.8
+
+                        if score < 0.50 or not text:
+                            continue
+
                         x1, y1 = np.min(box, axis=0)
                         x2, y2 = np.max(box, axis=0)
                         x1 = max(0, x1)
@@ -99,11 +127,81 @@ class HandwritingReader:
                         y2 = min(img_bgr.shape[0], y2)
 
                         word_bin = binary_mask[y1:y2, x1:x2]
-                        chars = [c for c in text if not c.isspace()]
-                        if not chars or word_bin.shape[0] < 8 or word_bin.shape[1] < 8:
+                        if word_bin.shape[0] < 6 or word_bin.shape[1] < 4:
                             continue
 
-                        # Contour detection inside word
+                        chars = [c for c in text if not c.isspace()]
+                        if not chars:
+                            continue
+
+                        # A) Single character detection (e.g. 'a', 'I', '1')
+                        if len(chars) == 1:
+                            coords = cv2.findNonZero(word_bin)
+                            if coords is not None:
+                                tx, ty, tw, th = cv2.boundingRect(coords)
+                                crop_trimmed = word_bin[ty:ty+th, tx:tx+tw]
+                                is_v, _ = is_valid_single_glyph(crop_trimmed, chars[0], strict=True)
+                                if is_v:
+                                    rec = extractor.register_glyph(chars[0], crop_trimmed)
+                                    if rec:
+                                        registered_count += 1
+                            continue
+
+                        # B) High-confidence whole cursive word preservation
+                        clean_word = text.strip(".,;:!?'\"-")
+                        if len(clean_word) >= 2 and score >= 0.65:
+                            coords = cv2.findNonZero(word_bin)
+                            if coords is not None:
+                                wx, wy, ww, wh = cv2.boundingRect(coords)
+                                w_crop = word_bin[wy:wy+wh, wx:wx+ww]
+                                if hasattr(extractor, 'register_word'):
+                                    extractor.register_word(clean_word, w_crop, metadata={"score": round(score, 2)})
+
+                        # C) Trailing punctuation extraction (. or ,)
+                        if text.endswith(".") and word_bin.shape[1] > 15:
+                            p_strip = word_bin[:, -15:]
+                            p_coords = cv2.findNonZero(p_strip)
+                            if p_coords is not None:
+                                px, py, pw, ph = cv2.boundingRect(p_coords)
+                                if pw <= 12 and ph <= 12:
+                                    p_crop = p_strip[py:py+ph, px:px+pw]
+                                    is_v, _ = is_valid_single_glyph(p_crop, ".", strict=True)
+                                    if is_v:
+                                        rec = extractor.register_glyph(".", p_crop)
+                                        if rec:
+                                            registered_count += 1
+
+                        elif text.endswith(",") and word_bin.shape[1] > 15:
+                            c_strip = word_bin[:, -15:]
+                            c_coords = cv2.findNonZero(c_strip)
+                            if c_coords is not None:
+                                cx, cy, cw, ch_h = cv2.boundingRect(c_coords)
+                                if cw <= 14 and ch_h <= 18:
+                                    c_crop = c_strip[cy:cy+ch_h, cx:cx+cw]
+                                    is_v, _ = is_valid_single_glyph(c_crop, ",", strict=True)
+                                    if is_v:
+                                        rec = extractor.register_glyph(",", c_crop)
+                                        if rec:
+                                            registered_count += 1
+
+                        # D) Disconnected leading capital letter extraction
+                        if clean_word and clean_word[0].isupper() and len(clean_word) > 1:
+                            cap_ch = clean_word[0]
+                            num_c, lbls, sts, _ = cv2.connectedComponentsWithStats(word_bin)
+                            if num_c >= 3:
+                                c1_w = int(sts[1, 2])
+                                c1_h = int(sts[1, 3])
+                                c1_gap = sts[2, 0] - (sts[1, 0] + c1_w) if num_c > 2 else 0
+                                if c1_gap >= 2 and c1_h >= 12 and (c1_w / float(c1_h) <= 1.4):
+                                    c1_mask = (lbls == 1).astype(np.uint8) * 255
+                                    c1_crop = c1_mask[sts[1, 1]:sts[1, 1]+c1_h, sts[1, 0]:sts[1, 0]+c1_w]
+                                    is_v, _ = is_valid_single_glyph(c1_crop, cap_ch, strict=True)
+                                    if is_v:
+                                        rec = extractor.register_glyph(cap_ch, c1_crop)
+                                        if rec:
+                                            registered_count += 1
+
+                        # E) 1-to-1 contour mapping for cleanly separated characters
                         contours, _ = cv2.findContours(word_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                         valid_contours = []
                         for cnt in contours:
@@ -113,79 +211,16 @@ class HandwritingReader:
 
                         valid_contours.sort(key=lambda b: b[0])
 
-                        # 1-to-1 contour mapping
                         if len(valid_contours) == len(chars):
                             for ch_char, (cx, cy, cw, ch) in zip(chars, valid_contours):
                                 crop = word_bin[cy:cy+ch, cx:cx+cw]
-                                extractor.register_glyph(ch_char, crop)
-                                registered_count += 1
-                        elif len(chars) == 1:
-                            # Single character: take all non-zero pixels cleanly
-                            coords = cv2.findNonZero(word_bin)
-                            if coords is not None:
-                                tx, ty, tw, th = cv2.boundingRect(coords)
-                                if tw >= 4 and th >= 6:
-                                    crop_trimmed = word_bin[ty:ty+th, tx:tx+tw]
-                                    extractor.register_glyph(chars[0], crop_trimmed)
-                                    registered_count += 1
-                        else:
-                            # Cursive connected word: find valleys in vertical projection
-                            v_proj = np.sum(word_bin > 0, axis=0)
-                            w_total = word_bin.shape[1]
-                            
-                            # Find local minima (valleys) between strokes
-                            if len(chars) > 1 and w_total >= len(chars) * 6:
-                                expected_w = w_total / len(chars)
-                                prev_cut = 0
-                                
-                                for i in range(1, len(chars)):
-                                    # Search window around expected boundary
-                                    center = int(i * expected_w)
-                                    win_start = max(prev_cut + 5, int(center - expected_w * 0.4))
-                                    win_end = min(w_total - 5, int(center + expected_w * 0.4))
-                                    
-                                    if win_end > win_start:
-                                        window = v_proj[win_start:win_end]
-                                        cut_x = win_start + int(np.argmin(window))
-                                    else:
-                                        cut_x = center
-                                        
-                                    crop = word_bin[:, prev_cut:cut_x]
-                                    prev_cut = cut_x
-                                    
-                                    coords = cv2.findNonZero(crop)
-                                    if coords is not None:
-                                        tx, ty, tw, th = cv2.boundingRect(coords)
-                                        # Typographical sanity check before registering
-                                        if tw >= 6 and th >= 10 and (tw * th >= 50):
-                                            ar = tw / float(th)
-                                            if 0.2 <= ar <= 2.2:
-                                                crop_trimmed = crop[ty:ty+th, tx:tx+tw]
-                                                extractor.register_glyph(chars[i-1], crop_trimmed)
-                                                registered_count += 1
-                                                
-                                # Last character
-                                crop = word_bin[:, prev_cut:]
-                                coords = cv2.findNonZero(crop)
-                                if coords is not None:
-                                    tx, ty, tw, th = cv2.boundingRect(coords)
-                                    if tw >= 6 and th >= 10 and (tw * th >= 50):
-                                        ar = tw / float(th)
-                                        if 0.2 <= ar <= 2.2:
-                                            crop_trimmed = crop[ty:ty+th, tx:tx+tw]
-                                            extractor.register_glyph(chars[-1], crop_trimmed)
-                                            registered_count += 1
+                                is_v, _ = is_valid_single_glyph(crop, ch_char, strict=True)
+                                if is_v:
+                                    rec = extractor.register_glyph(ch_char, crop)
+                                    if rec:
+                                        registered_count += 1
+
             except Exception as e:
                 logger.error(f"RapidOCR alignment error: {e}")
-
-        # Fallback: if OCR produced nothing, extract via line contours
-        if registered_count == 0 and line_ranges:
-            for ly1, ly2 in line_ranges:
-                line_bin = binary_mask[ly1:ly2, :]
-                glyphs = extractor.segment_words_and_glyphs(line_bin, line_y_offset=ly1)
-                for g in glyphs:
-                    crop = g["crop"]
-                    # Register under a placeholder label or skip
-                    pass
 
         return registered_count

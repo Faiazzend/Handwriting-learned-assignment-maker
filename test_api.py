@@ -18,9 +18,18 @@ def test():
     for t in tiers:
         print(f"  [{t['status'].upper():>11}] {t['name']}")
 
-    # 3. Generate
+    # 3. Validate Text
+    r = requests.post(f"{BASE}/api/validate-text", json={
+        "text": "→ Political authority and power is legitimate.\n→ In reality citizens obey the state."
+    })
+    assert r.status_code == 200
+    v_data = r.json()
+    assert v_data["valid"] is True
+    print(f"[OK] /api/validate-text: valid={v_data['valid']}, coverage={v_data['coverage_pct']}%")
+
+    # 4. Generate
     r = requests.post(f"{BASE}/api/generate", json={
-        "text": "# Test Assignment\nName: Student\n\nThis is a sample paragraph to verify the handwriting engine works correctly.",
+        "text": "# Political Authority and Modern State\n\n→ Power was fragmented in early days.\n→ Authority came from management of conflict.\n→ In reality legitimacy is not abstract concept.",
         "ink_type": "Royal Blue Ballpoint",
         "baseline_slant": 0.4,
         "margin_drift": 12,

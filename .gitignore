@@ -9,9 +9,11 @@ build/
 # Temporary files
 temp/
 scratch_*.py
+/*.jpg
 
 # Generated output (large binaries)
 output/*.pdf
+output/*.png
 
 # Model checkpoints (large)
 data/models/*.pt
