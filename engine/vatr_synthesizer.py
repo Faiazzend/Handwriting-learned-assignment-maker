@@ -237,7 +237,8 @@ class HandwritingSynthesizer:
         try:
             processed = []
             for img in word_images[:15]:
-                gray = img.convert("L")
+                alpha = img.split()[3] if len(img.split()) == 4 else img.convert("L")
+                gray = Image.eval(alpha, lambda a: 255 - a) if len(img.split()) == 4 else alpha
                 gray = gray.resize((128, 64), Image.Resampling.LANCZOS)
                 arr = np.array(gray, dtype=np.float32) / 255.0
                 processed.append(arr)
@@ -373,15 +374,10 @@ class HandwritingSynthesizer:
         draw.text((4 - bbox[0], 4 - bbox[1]), ch, font=self._fallback_font, fill=(30, 30, 35, 255))
         return img
 
-    def train_on_word_crops(self, word_images, word_labels, epochs=50, lr=1e-4):
+    def train_on_word_crops(self, word_images, word_labels, epochs=1000, lr=1e-4):
         """
         Fine-tune the VATr model on user's word crops for personalized synthesis.
-
-        Args:
-            word_images: list of PIL Images (cropped handwritten words)
-            word_labels: list of str (text content of each word)
-            epochs: training iterations
-            lr: learning rate
+        Uses data augmentation, L1 loss, and early stopping.
         """
         if not _TORCH_AVAILABLE or self.model is None:
             logger.warning("Cannot train: PyTorch or VATr model not available")
@@ -391,23 +387,21 @@ class HandwritingSynthesizer:
         self.model.train()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
 
-        # Pre-process all targets into GPU tensors ONCE
-        logger.info(f"Pre-tensorizing {len(word_images)} word images to {self.device}...")
-        targets = []
+        logger.info(f"Preparing {len(word_images)} words for robust training...")
         token_list = []
+        base_images = []
         for img, label in zip(word_images, word_labels):
-            gray = img.convert("L").resize((128, 64), Image.Resampling.BILINEAR)
-            t = torch.tensor(
-                np.array(gray, dtype=np.float32) / 255.0,
-                device=self.device
-            ).unsqueeze(0).unsqueeze(0)
-            targets.append(t)
+            # Extract alpha, invert so 0=ink, 255=bg
+            alpha = img.split()[3]
+            base_gray = Image.eval(alpha, lambda a: 255 - a)
+            base_images.append(base_gray)
             token_list.append(self.model.content_encoder.encode_text(label, self.device))
 
-        # Pre-process fixed style reference tensor (top 10 clean words)
+        # Pre-process fixed style reference tensor (top 15 clean words)
         style_refs = []
-        for si in word_images[:10]:
-            sg = si.convert("L").resize((128, 64), Image.Resampling.BILINEAR)
+        for si in word_images[:15]:
+            s_alpha = si.split()[3].resize((128, 64), Image.Resampling.BILINEAR)
+            sg = Image.eval(s_alpha, lambda a: 255 - a)
             style_refs.append(np.array(sg, dtype=np.float32) / 255.0)
         style_tensor = torch.tensor(
             np.stack(style_refs),
@@ -415,31 +409,64 @@ class HandwritingSynthesizer:
             dtype=torch.float32
         ).unsqueeze(0).unsqueeze(2)
 
-        # Compute style embedding once and detach from graph
         with torch.no_grad():
             style_emb = self.model.style_encoder(style_tensor).detach()
 
+        import torchvision.transforms as T
+        import torchvision.transforms.functional as TF
+        
+        augmenter = T.RandomAffine(degrees=2, translate=(0.02, 0.05), scale=(0.95, 1.05), shear=4, fill=255)
+        
+        best_loss = float('inf')
+        patience_counter = 0
+        patience_limit = 100
+        
         for epoch in range(epochs):
             total_loss = 0.0
-            for target, token_ids in zip(targets, token_list):
+            for base_gray, token_ids in zip(base_images, token_list):
+                # Data augmentation per epoch
+                aug_img = augmenter(base_gray).resize((128, 64), Image.Resampling.BILINEAR)
+                target = torch.tensor(
+                    np.array(aug_img, dtype=np.float32) / 255.0,
+                    device=self.device
+                ).unsqueeze(0).unsqueeze(0)
+
                 content = self.model.content_encoder(token_ids)
                 generated = self.model.generator(content, style_emb)
+                
+                # Resize generation if needed
                 generated_resized = F.interpolate(generated, size=target.shape[2:], mode="bilinear", align_corners=False)
-                loss = F.mse_loss(generated_resized, target)
+                
+                # L1 Loss preserves sharp strokes much better than MSE!
+                loss = F.l1_loss(generated_resized, target) + 0.5 * F.mse_loss(generated_resized, target)
 
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
                 total_loss += loss.item()
 
-            avg = total_loss / max(len(targets), 1)
-            if (epoch + 1) % 5 == 0 or epoch == 0:
-                logger.info(f"Epoch {epoch+1}/{epochs} - Loss: {avg:.4f}")
+            avg = total_loss / max(len(base_images), 1)
+            
+            if avg < best_loss - 0.0001:
+                best_loss = avg
+                patience_counter = 0
+                # Save best weights
+                torch.save(self.model.state_dict(), self.CHECKPOINT_PATH)
+            else:
+                patience_counter += 1
+                
+            if (epoch + 1) % 10 == 0 or epoch == 0:
+                logger.info(f"Epoch {epoch+1}/{epochs} - Loss: {avg:.4f} (Best: {best_loss:.4f})")
+                
+            if patience_counter >= patience_limit and epoch > 150:
+                logger.info(f"Early stopping triggered at epoch {epoch+1}")
+                break
 
-        # Save checkpoint
-        torch.save(self.model.state_dict(), self.CHECKPOINT_PATH)
+        # Load best weights
+        if os.path.exists(self.CHECKPOINT_PATH):
+            self.model.load_state_dict(torch.load(self.CHECKPOINT_PATH, map_location=self.device))
         self.model.eval()
         self.tier = 1
         logger.info(f"VATr model trained and saved to {self.CHECKPOINT_PATH}")
 
-        return {"epochs": epochs, "final_loss": total_loss / max(len(word_images), 1)}
+        return {"epochs": epoch + 1, "final_loss": best_loss}
