@@ -254,23 +254,27 @@ class HandwritingSynthesizer:
         except Exception as e:
             logger.error(f"Style reference processing failed: {e}")
 
-    def generate_word(self, text, target_height=65):
+    def generate_word(self, text, target_height=65, allow_procedural_fallback=True):
         """
         Generate a handwritten word image in the user's style.
 
         Args:
             text: The word to render
             target_height: Desired height in pixels
+            allow_procedural_fallback: If False, return None instead of silently
+                falling back to procedural compositing when neural synthesis is
+                unavailable or fails.
 
         Returns:
-            PIL Image (RGBA) of the handwritten word
+            PIL Image (RGBA) of the handwritten word, or None (see above)
         """
         if self.tier == 1 and self.model is not None and self.style_embedding is not None:
-            return self._generate_neural(text, target_height)
-        else:
-            return self._generate_procedural(text, target_height)
+            return self._generate_neural(text, target_height, allow_procedural_fallback)
+        if not allow_procedural_fallback:
+            return None
+        return self._generate_procedural(text, target_height)
 
-    def _generate_neural(self, text, target_height):
+    def _generate_neural(self, text, target_height, allow_procedural_fallback=True):
         """Generate using VATr neural synthesis."""
         try:
             with torch.no_grad():
@@ -309,6 +313,8 @@ class HandwritingSynthesizer:
 
         except Exception as e:
             logger.error(f"Neural generation failed for '{text}': {e}")
+            if not allow_procedural_fallback:
+                return None
             return self._generate_procedural(text, target_height)
 
     def _generate_procedural(self, text, target_height):
