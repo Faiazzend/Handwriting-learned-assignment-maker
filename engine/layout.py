@@ -385,8 +385,22 @@ class UnruledPageLayout:
 
     def _try_neural_word(self, clean_word, extra_scale):
         syn = self.synthesizer
-        if (not self.use_neural or self._neural_disabled or syn is None
-                or getattr(syn, "tier", 3) != 1 or getattr(syn, "model", None) is None):
+        if not self.use_neural or self._neural_disabled or syn is None:
+            return None
+
+        # Check if synthesizer is HybridAIProvider or AIProvider with synthesize_word
+        if hasattr(syn, "synthesize_word"):
+            try:
+                img = syn.synthesize_word(clean_word, target_height=int(55 * extra_scale))
+                if img is not None and self._passes_neural_quality_gate(img, clean_word):
+                    self._neural_failures = 0
+                    self.quality_report["neural_words"] += 1
+                    return img
+            except Exception as e:
+                logger.warning(f"AI Provider synthesis raised for '{clean_word}': {e}")
+            return None
+
+        if getattr(syn, "tier", 3) != 1 or getattr(syn, "model", None) is None:
             return None
         # VATr's content encoder only knows ASCII letters; skip symbols/bullets
         if not clean_word or not all(c.isascii() and (c.isalpha() or c in "'-") for c in clean_word):
