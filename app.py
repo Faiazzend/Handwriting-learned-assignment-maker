@@ -29,6 +29,7 @@ from engine.compositor import CamScannerCompositor
 from engine.pdf_builder import AssignmentPDFBuilder
 from engine.surya_reader import HandwritingReader
 from engine.vatr_synthesizer import HandwritingSynthesizer
+from engine.ai_provider import HybridAIProvider, load_ai_config, save_ai_config, OllamaProvider, GeminiProvider
 from engine.stroke_augmentor import augment_glyph_bank
 from engine.validator import validate_text_coverage, get_required_characters, MissingCharactersError
 
@@ -52,6 +53,7 @@ compositor = CamScannerCompositor()
 pdf_builder = AssignmentPDFBuilder()
 reader = HandwritingReader()
 synthesizer = HandwritingSynthesizer(glyph_bank=extractor.index)
+ai_provider = HybridAIProvider()
 
 # In-memory state
 _uploaded_pages = {}   # session_id -> list of processed page data
@@ -102,13 +104,48 @@ async def get_stats():
     return stats
 
 # ──────────────────────────────────────────────────────────────────────
+# API: AI Provider Configuration & Health
+# ──────────────────────────────────────────────────────────────────────
+
+class AIConfigRequest(BaseModel):
+    mode: Optional[str] = "hybrid"
+    ollama: Optional[dict] = None
+    gemini: Optional[dict] = None
+
+@app.get("/api/ai/config")
+async def get_ai_config():
+    return load_ai_config()
+
+@app.post("/api/ai/config")
+async def update_ai_config(req: AIConfigRequest):
+    global ai_provider
+    current = load_ai_config()
+    if req.mode:
+        current["mode"] = req.mode
+    if req.ollama:
+        current.setdefault("ollama", {}).update(req.ollama)
+    if req.gemini:
+        current.setdefault("gemini", {}).update(req.gemini)
+    save_ai_config(current)
+    # Re-initialize provider
+    ai_provider = HybridAIProvider()
+    return {"status": "updated", "config": current}
+
+@app.get("/api/ai/health")
+async def get_ai_health():
+    return ai_provider.check_health()
+
+# ──────────────────────────────────────────────────────────────────────
 # API: Model Status
 # ──────────────────────────────────────────────────────────────────────
 
 @app.get("/api/model-status")
 async def get_model_status():
     reader_status = reader.get_status()
-    synth_status = synthesizer.get_status()
+    health = ai_provider.check_health()
+
+    ollama_status = health.get("ollama", {}).get("status", "offline")
+    gemini_status = health.get("gemini", {}).get("status", "unconfigured")
 
     tiers = [
         {
@@ -119,18 +156,18 @@ async def get_model_status():
             "details": "Extracts and reuses real glyph crops from your notes with alternate selection to prevent duplicates."
         },
         {
-            "name": "Surya OCR Recognition",
+            "name": "Vision AI & OCR Extractor",
             "tier": 2,
-            "status": reader_status["status"],
-            "description": "Deep learning handwriting recognition for automatic note transcription and glyph labeling.",
-            "details": f"Backend: {reader_status['backend']} | Surya: {'yes' if reader_status['surya_available'] else 'no'} | Tesseract: {'yes' if reader_status['tesseract_available'] else 'no'}"
+            "status": "active" if ollama_status == "healthy" else reader_status["status"],
+            "description": "Vision deep learning handwriting recognition and whole-word extraction via local Ollama gemma4:12b.",
+            "details": f"Ollama gemma4:12b: {ollama_status} | RapidOCR: {'yes' if reader_status['rapid_available'] else 'no'}"
         },
         {
-            "name": "VATr Neural Synthesis",
+            "name": "Hybrid AI Synthesis Engine",
             "tier": 1,
-            "status": "active" if (synth_status["checkpoint_exists"] or synth_status["status"] == "active") else "available",
-            "description": "Visual Appearance Transformer for few-shot style-conditioned handwriting generation on NVIDIA RTX 3070.",
-            "details": f"Device: {synth_status['device']} (NVIDIA RTX 3070) | Checkpoint: {'Active (vatr_handwriting.pt)' if synth_status['checkpoint_exists'] else 'missing'} | Tier 1 Active"
+            "status": "active" if (gemini_status == "healthy" or ollama_status == "healthy") else "available",
+            "description": "Dual-engine handwriting synthesis: Google Gemini API (online fast) with seamless fallback to Ollama gemma4:12b on RTX 3070.",
+            "details": f"Active: {health.get('active_synthesis', 'ollama').upper()} | Ollama: {ollama_status} | Gemini: {gemini_status}"
         }
     ]
 
@@ -353,7 +390,7 @@ async def generate_assignment(req: GenerateRequest):
 
         layout = UnruledPageLayout(
             glyph_bank=extractor.index,
-            synthesizer=synthesizer,
+            synthesizer=ai_provider,
             words_index_path="data/words_v2/words_index.json"
         )
 

@@ -1,0 +1,13 @@
+{
+  "mode": "hybrid",
+  "ollama": {
+    "endpoint": "http://localhost:11434",
+    "model": "gemma4:12b",
+    "timeout_sec": 60
+  },
+  "gemini": {
+    "api_key": "test-key-123",
+    "model": "gemini-2.0-flash",
+    "timeout_sec": 15
+  }
+}
