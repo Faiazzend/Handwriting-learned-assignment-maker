@@ -54,6 +54,8 @@ pdf_builder = AssignmentPDFBuilder()
 reader = HandwritingReader()
 synthesizer = HandwritingSynthesizer(glyph_bank=extractor.index)
 ai_provider = HybridAIProvider()
+from engine.vision_extractor import VisionNoteExtractor
+vision_extractor = VisionNoteExtractor(ai_provider=ai_provider)
 
 # In-memory state
 _uploaded_pages = {}   # session_id -> list of processed page data
@@ -291,8 +293,11 @@ async def extract_glyphs(req: ExtractRequest):
                     registered_count += 1
                     global_glyph_idx += 1
     else:
-        # Automated OCR reading and character segmentation
-        registered_count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=line_ranges)
+        # Gemma 4 (12B) AI Vision reading and whole-word extraction
+        registered_count = vision_extractor.extract_from_page(img_bgr, binary, extractor, line_ranges=line_ranges)
+        if registered_count == 0:
+            # Fallback to OCR reader if vision model extracted 0
+            registered_count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=line_ranges)
 
     # Update synthesizer's glyph bank
     synthesizer.glyph_bank = extractor.index
@@ -318,7 +323,9 @@ async def extract_all_pages():
             img_bgr = cv2.imread(orig_path)
             binary = cv2.imread(proc_path, cv2.IMREAD_GRAYSCALE)
             lines = extractor.segment_lines(binary)
-            count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=lines)
+            count = vision_extractor.extract_from_page(img_bgr, binary, extractor, line_ranges=lines)
+            if count == 0:
+                count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=lines)
             total_new += count
 
     synthesizer.glyph_bank = extractor.index

@@ -129,7 +129,76 @@ class VisionNoteExtractor:
                 "crop": rgba,
                 "width": crop_w,
                 "height": crop_h,
-                "bbox": [ly1 + px_y1, px_x1, ly1 + px_y2, px_x2]
+                "bbox": [ly1 + px_y1, px_x1, ly1 + px_y2, px_x2],
+                "binary": word_binary
             })
 
         return valid_results
+
+    def extract_from_page(
+        self, img_bgr: np.ndarray, binary_mask: np.ndarray, extractor, line_ranges: Optional[List[Tuple[int, int]]] = None
+    ) -> int:
+        """
+        Uses Gemma 4 (12B) vision via AIProvider to read and study handwritten notes.
+        Extracts whole authentic words and isolated glyphs.
+        """
+        if line_ranges is None:
+            from engine.extractor import GlyphExtractor
+            line_ranges = extractor.segment_lines(binary_mask)
+
+        # Load existing words index
+        words_data = []
+        if os.path.exists(self.words_index_path):
+            try:
+                with open(self.words_index_path, "r", encoding="utf-8") as f:
+                    words_data = json.load(f)
+            except Exception:
+                words_data = []
+
+        registered_count = 0
+        word_counter = len(words_data)
+
+        for ly1, ly2 in line_ranges:
+            try:
+                results = self.process_line_image(img_bgr, binary_mask, (ly1, ly2))
+                for item in results:
+                    word = item["word"]
+                    crop_img = item["crop"]
+                    w, h = item["width"], item["height"]
+                    wb = item["binary"]
+
+                    # 1. Register whole word in words_v2
+                    clean_label = word.rstrip(".,;:!?'\"-")
+                    if clean_label:
+                        word_counter += 1
+                        safe_label = "".join(c for c in clean_label if c.isalnum() or c in "_-")
+                        word_filename = f"w_{word_counter}_{safe_label}.png"
+                        word_path = os.path.join(self.words_dir, word_filename).replace("\\", "/")
+                        crop_img.save(word_path)
+
+                        words_data.append({
+                            "label": clean_label,
+                            "path": word_path,
+                            "width": w,
+                            "height": h,
+                            "page": 1,
+                        })
+                        registered_count += 1
+
+                    # 2. If word is a single character or punctuation, register in glyph bank
+                    if len(word) == 1 and wb is not None and wb.size > 0:
+                        reg = extractor.register_glyph(word, wb)
+                        if reg:
+                            registered_count += 1
+
+            except Exception as e:
+                logger.warning(f"Vision extraction failed on line ({ly1}, {ly2}): {e}")
+
+        # Save updated words index
+        try:
+            with open(self.words_index_path, "w", encoding="utf-8") as f:
+                json.dump(words_data, f, indent=2)
+        except Exception as e:
+            logger.error(f"Failed to save words_index.json: {e}")
+
+        return registered_count
