@@ -261,7 +261,16 @@
         
         <!-- Topbar -->
         <header class="h-16 flex items-center justify-between px-8 shrink-0">
-            <h1 class="text-xl font-medium tracking-tight" x-text="navItems.find(i => i.id === activeSection)?.name"></h1>
+            <div class="flex items-center gap-4">
+                <h1 class="text-xl font-medium tracking-tight" x-text="navItems.find(i => i.id === activeSection)?.name"></h1>
+                
+                <!-- AI Engine Status Badge / Trigger -->
+                <button @click="aiModalOpen = true" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium glass hover:bg-slate-800/80 transition-all border border-indigo-500/30">
+                    <span class="w-2 h-2 rounded-full" :class="aiConfig.gemini?.api_key ? 'bg-emerald-400 animate-pulse' : 'bg-indigo-400'"></span>
+                    <span x-text="aiConfig.gemini?.api_key ? 'Hybrid: Gemma 4 (12B) + Gemini' : 'Local GPU: Gemma 4 (12B)'"></span>
+                    <i class="ph ph-gear text-slate-400 ml-1"></i>
+                </button>
+            </div>
             
             <button @click="settingsOpen = !settingsOpen" class="w-10 h-10 rounded-full glass flex items-center justify-center text-brand-textMuted hover:text-white transition-colors">
                 <i class="ph ph-sliders-horizontal text-lg"></i>
@@ -724,6 +733,57 @@
                 </button>
             </div>
         </div>
+    <!-- AI Settings Modal -->
+    <div x-show="aiModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4" x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100">
+        <div class="glass w-full max-w-md p-6 rounded-2xl border border-slate-700 shadow-2xl relative" @click.away="aiModalOpen = false">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-700/50 mb-5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <i class="ph-fill ph-brain text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-semibold text-white">AI Engine Configuration</h2>
+                        <p class="text-xs text-slate-400">Local Ollama (GPU) + Google Gemini</p>
+                    </div>
+                </div>
+                <button @click="aiModalOpen = false" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/50">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1.5">Local Ollama Model (RTX 3070 GPU)</label>
+                    <select x-model="aiConfig.ollama.model" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500">
+                        <option value="gemma4:12b">gemma4:12b (Recommended - Vision Deep Learning)</option>
+                        <option value="qwen3.5:4b">qwen3.5:4b (Fast 4B Vision)</option>
+                    </select>
+                    <p class="text-[11px] text-slate-400 mt-1">Runs locally on http://localhost:11434 for private note extraction.</p>
+                </div>
+                
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1.5">Google Gemini API Key (Fast Cloud Synthesis)</label>
+                    <input type="password" x-model="aiConfig.gemini.api_key" placeholder="AIzaSy... (optional)" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-white placeholder-slate-500 font-mono text-xs focus:outline-none focus:border-indigo-500">
+                    <p class="text-[11px] text-slate-400 mt-1">When provided, fast word generation uses Gemini with instant fallback to Ollama if offline.</p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-between mt-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full" :class="aiConfig.gemini?.api_key ? 'bg-emerald-400' : 'bg-indigo-400'"></span>
+                        <span class="text-slate-300 font-medium" x-text="aiConfig.gemini?.api_key ? 'Hybrid Mode Active' : 'Local GPU Mode Active'"></span>
+                    </div>
+                    <span class="text-[11px] text-slate-400" x-text="aiConfig.gemini?.api_key ? 'Ollama + Gemini' : 'Ollama gemma4:12b'"></span>
+                </div>
+
+                <div class="pt-3 flex justify-end gap-2">
+                    <button @click="aiModalOpen = false" class="px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors">Cancel</button>
+                    <button @click="saveAIConfig()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-glow transition-all">Save & Apply</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notifications -->
@@ -822,7 +882,46 @@ Origin of State
                     { id: 'models', name: 'AI Models', icon: 'ph-cpu' },
                 ],
 
+                // AI Provider Configuration
+                aiModalOpen: false,
+                aiConfig: {
+                    mode: 'hybrid',
+                    ollama: { endpoint: 'http://localhost:11434', model: 'gemma4:12b' },
+                    gemini: { api_key: '', model: 'gemini-2.0-flash' }
+                },
+
+                async fetchAIConfig() {
+                    try {
+                        const res = await fetch('/api/ai/config');
+                        if (res.ok) {
+                            this.aiConfig = await res.json();
+                        }
+                    } catch (e) {
+                        console.error('Failed to fetch AI config:', e);
+                    }
+                },
+
+                async saveAIConfig() {
+                    try {
+                        const res = await fetch('/api/ai/config', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(this.aiConfig)
+                        });
+                        if (res.ok) {
+                            this.addToast('AI Configuration saved successfully!', 'success');
+                            this.aiModalOpen = false;
+                            await this.fetchModelStatus();
+                        } else {
+                            this.addToast('Failed to save AI configuration.', 'error');
+                        }
+                    } catch (e) {
+                        this.addToast('Network error saving AI configuration.', 'error');
+                    }
+                },
+
                 async init() {
+                    await this.fetchAIConfig();
                     await this.fetchStats();
                     await this.fetchModelStatus();
                     await this.fetchGlyphs();
