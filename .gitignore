@@ -8,6 +8,7 @@ build/
 
 # Temporary files
 temp/
+scratch/
 scratch_*.py
 /*.jpg
 

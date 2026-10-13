@@ -35,3 +35,14 @@ def test_get_ai_health(client):
     data = res.json()
     assert "ollama" in data
     assert "gemini" in data
+
+
+def test_get_extract_progress(client):
+    res = client.get("/api/extract/progress")
+    assert res.status_code == 200
+    data = res.json()
+    assert "active" in data
+    assert "percent" in data
+    assert "words_extracted" in data
+    assert "status" in data
+    assert "message" in data

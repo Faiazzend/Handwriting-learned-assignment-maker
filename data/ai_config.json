@@ -1,13 +1,14 @@
 {
   "mode": "hybrid",
+  "extraction_mode": "rapidocr",
   "ollama": {
     "endpoint": "http://localhost:11434",
-    "model": "gemma4:12b",
-    "timeout_sec": 60
+    "model": "qwen3.5:4b",
+    "timeout_sec": 8
   },
   "gemini": {
-    "api_key": "test-key-123",
-    "model": "gemini-2.0-flash",
-    "timeout_sec": 15
+    "api_key": "AIzaSyB4pablgtDQKYPAwWFkX4ZWB8WTQ0z6Vl0",
+    "model": "gemini-3.1-flash-lite",
+    "timeout_sec": 4
   }
 }

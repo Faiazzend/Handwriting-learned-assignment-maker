@@ -270,6 +270,19 @@
                     <span x-text="aiConfig.gemini?.api_key ? 'Hybrid: Gemma 4 (12B) + Gemini' : 'Local GPU: Gemma 4 (12B)'"></span>
                     <i class="ph ph-gear text-slate-400 ml-1"></i>
                 </button>
+
+                <!-- Direct Gemini Key Quick Button -->
+                <button @click="aiModalOpen = true" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border shadow-sm"
+                        :class="aiConfig.gemini?.api_key ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60' : 'bg-amber-950/60 border-amber-500/50 text-amber-300 hover:bg-amber-900/60 animate-pulse'">
+                    <i class="ph-bold ph-key text-amber-400"></i>
+                    <span x-text="aiConfig.gemini?.api_key ? 'Gemini Key Configured ✓' : '🔑 Add Gemini Key (Fast Cloud)'"></span>
+                </button>
+
+                <!-- Live Global Progress Ticker (Visible from any screen) -->
+                <div x-show="isExtracting || extractProgress.active" class="flex items-center gap-2 px-3 py-1 bg-indigo-950/90 border border-indigo-500/50 rounded-full text-xs font-mono text-indigo-200 shadow-glow">
+                    <i class="ph-bold ph-lightning text-amber-400 animate-spin"></i>
+                    <span x-text="`${extractProgress.percent}% (Line ${extractProgress.current_line || 0}/${extractProgress.total_lines || 0}) - ${extractProgress.words_extracted || 0} words`"></span>
+                </div>
             </div>
             
             <button @click="settingsOpen = !settingsOpen" class="w-10 h-10 rounded-full glass flex items-center justify-center text-brand-textMuted hover:text-white transition-colors">
@@ -446,22 +459,171 @@
             </div>
 
             <!-- SECTION: TRAIN ON NOTES -->
-            <div x-show="activeSection === 'train'" class="h-full flex flex-col gap-6" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-                <input type="file" id="notesFileInput" multiple accept="image/*" class="hidden" @change="handleFileUpload($event)">
-                <div class="glass border-dashed border-2 border-slate-600 rounded-2xl p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-primary transition-colors hover:bg-slate-800/40"
-                     @click="document.getElementById('notesFileInput').click()"
-                     :class="isUploading ? 'dashed-border-animated border-transparent' : ''">
-                    <i class="ph-duotone ph-upload-simple text-4xl text-brand-primary mb-4" :class="isUploading ? 'animate-bounce' : ''"></i>
-                    <h3 class="text-lg font-medium text-white mb-2">Upload CamScanner Note Photos</h3>
-                    <p class="text-sm text-brand-textMuted max-w-md">Click or drag & drop 1 to 5 scanned note pages. The system automatically normalizes lighting, strips paper backgrounds, and extracts characters.</p>
+            <div x-show="activeSection === 'train'" class="h-full flex flex-col gap-5 overflow-y-auto pr-1" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                
+                <!-- AI Engine & Gemini API Key Configuration Card (Unmissable) -->
+                <div class="glass p-6 rounded-2xl border-2 border-amber-500/40 shadow-[0_0_25px_rgba(245,158,11,0.2)] flex flex-col gap-4 relative overflow-hidden bg-gradient-to-b from-slate-900/95 to-slate-950/95 shrink-0">
+                    <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-indigo-500 to-emerald-400"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-glow">
+                                <i class="ph-bold ph-lightning text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="text-base font-bold text-white tracking-wide">Handwriting Extraction Engine</h3>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                                          :class="aiConfig.extraction_mode === 'rapidocr' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : (aiConfig.extraction_mode === 'gemini' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40')"
+                                          x-text="aiConfig.extraction_mode === 'rapidocr' ? '⚡ Instant Local Mode Active (~3s)' : (aiConfig.extraction_mode === 'gemini' ? '☁️ Cloud Gemini AI (4s Fail-Safe)' : '🖥️ Local Ollama Mode')">
+                                    </span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1">
+                                    <span class="text-emerald-400 font-medium">⚡ Instant RapidOCR:</span> Extracts entire page in <strong class="text-white">~3 seconds</strong> offline. <span class="text-amber-400 font-medium">☁️ Gemini:</span> 4s fail-fast timeout with auto-OCR fallback.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 3-Tier Mode Selector -->
+                        <div class="flex items-center bg-slate-950 p-1.5 rounded-xl border border-slate-700 gap-1 self-start md:self-auto shrink-0">
+                            <button type="button" @click="aiConfig.extraction_mode = 'rapidocr'; saveAIConfig()"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5"
+                                    :class="aiConfig.extraction_mode === 'rapidocr' ? 'bg-emerald-500 text-slate-950 shadow-glow' : 'text-slate-400 hover:text-white'">
+                                <i class="ph-bold ph-lightning"></i>
+                                <span>Instant (~3s)</span>
+                            </button>
+                            <button type="button" @click="aiConfig.extraction_mode = 'gemini'; saveAIConfig()"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5"
+                                    :class="aiConfig.extraction_mode === 'gemini' ? 'bg-amber-500 text-slate-950 shadow-glow' : 'text-slate-400 hover:text-white'">
+                                <i class="ph-bold ph-cloud"></i>
+                                <span>Cloud Gemini</span>
+                            </button>
+                            <button type="button" @click="aiConfig.extraction_mode = 'ollama'; saveAIConfig()"
+                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5"
+                                    :class="aiConfig.extraction_mode === 'ollama' ? 'bg-indigo-500 text-white shadow-glow' : 'text-slate-400 hover:text-white'">
+                                <i class="ph-bold ph-cpu"></i>
+                                <span>Local Ollama</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Gemini API Key Input & Model Settings Bar -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 pt-3 border-t border-slate-800/80">
+                        <div class="md:col-span-8 flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                                <i class="ph-bold ph-key text-amber-400"></i>
+                                <span>Google Gemini API Key</span>
+                                <span class="text-slate-400 font-normal text-[11px]">(Optional for cloud synthesis / extraction — <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-amber-400 underline hover:text-amber-300">Get free key</a>)</span>
+                            </label>
+                            <div class="flex gap-2">
+                                <div class="relative flex-1">
+                                    <input :type="showGeminiKey ? 'text' : 'password'"
+                                           x-model="aiConfig.gemini.api_key"
+                                           placeholder="AIzaSy... (Paste Gemini key here)"
+                                           class="w-full bg-slate-950 border-2 border-slate-700 focus:border-amber-400 rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                                    <button type="button" @click="showGeminiKey = !showGeminiKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-base" title="Toggle visibility">
+                                        <i :class="showGeminiKey ? 'ph ph-eye-slash' : 'ph ph-eye'"></i>
+                                    </button>
+                                </div>
+                                <button @click="saveAIConfig()" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all shrink-0 flex items-center gap-1.5">
+                                    <i class="ph-bold ph-floppy-disk text-sm"></i>
+                                    <span>Save Key</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-4 flex flex-col gap-1.5">
+                            <label class="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                                <i class="ph-bold ph-cpu text-indigo-400"></i>
+                                <span>Local Ollama Model</span>
+                            </label>
+                            <select x-model="aiConfig.ollama.model" @change="saveAIConfig()" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-400 cursor-pointer">
+                                <option value="qwen3.5:4b">qwen3.5:4b (Fast GPU VRAM — Recommended)</option>
+                                <option value="gemma4:12b">gemma4:12b (12B High Accuracy)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto">
+                <!-- LIVE REAL-TIME EXTRACTION PROGRESS BAR & TICKER -->
+                <div x-show="isExtracting || extractProgress.active"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="glass p-5 rounded-2xl border shadow-2xl relative overflow-hidden bg-slate-950/90 shrink-0"
+                     :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'border-emerald-500/60' : 'border-indigo-500/60'">
+                    
+                    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r"
+                         :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'from-emerald-400 to-teal-400' : 'from-brand-primary via-purple-500 to-pink-500 animate-pulse'"></div>
+
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border"
+                                 :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-brand-primary/20 border-brand-primary/40 text-brand-primary'">
+                                <i class="text-xl"
+                                   :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'ph-bold ph-check-circle' : 'ph-bold ph-lightning animate-spin'"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-sm font-semibold text-white"
+                                        x-text="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? '🎉 Extraction Complete!' : (aiConfig.extraction_mode === 'rapidocr' ? '⚡ RapidOCR Instant Scanning...' : (aiConfig.extraction_mode === 'gemini' ? '☁️ Cloud Gemini AI Studying Handwriting...' : '🖥️ Ollama Studying Handwriting...'))"></h4>
+                                    <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full shadow-glow"
+                                          :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'bg-emerald-500 text-white' : 'bg-brand-primary text-white'"
+                                          x-text="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? '✓ 100% Done' : (extractProgress.percent + '%')"></span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-0.5 font-mono" x-text="extractProgress.message || 'Processing scanned note lines...'"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <div class="text-[10px] uppercase tracking-wider text-slate-400">Current Progress</div>
+                                <div class="text-xs font-mono font-semibold text-white" x-text="'Line ' + (extractProgress.current_line || 0) + ' of ' + (extractProgress.total_lines || '?')"></div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] uppercase tracking-wider text-slate-400">Words Extracted</div>
+                                <div class="text-xs font-mono font-bold text-emerald-400" x-text="(extractProgress.words_extracted || 0) + ' words'"></div>
+                            </div>
+                            <button @click="dismissProgress()" title="Dismiss progress card" class="ml-2 p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors border border-slate-700 text-xs flex items-center gap-1">
+                                <i class="ph-bold ph-x text-xs"></i>
+                                <span class="hidden sm:inline">Close</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Animated Glowing Progress Bar Track -->
+                    <div class="w-full bg-slate-800 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-700 shadow-inner">
+                        <div class="h-full rounded-full transition-all duration-300 relative"
+                             :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_15px_rgba(16,185,129,0.9)]' : 'bg-gradient-to-r from-brand-primary via-purple-500 to-emerald-400 shadow-[0_0_15px_rgba(99,102,241,0.9)]'"
+                             :style="`width: ${Math.max(5, extractProgress.percent)}%;`">
+                            <div class="absolute inset-0 bg-white/25" :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? '' : 'animate-pulse'"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-2.5 text-[11px] text-slate-400">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full" :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'bg-emerald-400' : 'bg-emerald-400 animate-ping'"></span>
+                            <span x-text="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'Glyphs & words successfully saved to handwriting library.' : 'Live extraction active — learning contours and word bounds'"></span>
+                        </span>
+                        <span class="font-mono text-slate-400 text-[10px]" x-text="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'Auto-closing in 2s...' : 'Real-time telemetry ticker'"></span>
+                    </div>
+                </div>
+
+                <input type="file" id="notesFileInput" multiple accept="image/*" class="hidden" @change="handleFileUpload($event)">
+                <div class="glass border-dashed border-2 border-slate-600 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-primary transition-colors hover:bg-slate-800/40 shrink-0"
+                     @click="document.getElementById('notesFileInput').click()"
+                     :class="isUploading ? 'dashed-border-animated border-transparent' : ''">
+                    <i class="ph-duotone ph-upload-simple text-4xl text-brand-primary mb-3" :class="isUploading ? 'animate-bounce' : ''"></i>
+                    <h3 class="text-lg font-medium text-white mb-1">Upload CamScanner Note Photos</h3>
+                    <p class="text-sm text-brand-textMuted max-w-md">Click or drag & drop scanned note pages. The system normalizes lighting, strips paper backgrounds, and extracts characters.</p>
+                </div>
+
+                <div class="flex-1 pb-6">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-sm font-medium text-brand-textMuted">Uploaded Pages & Processing Queue</h4>
                         <button @click="extractAll()" :disabled="isExtracting" class="text-xs bg-gradient-to-r from-brand-primary to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-semibold px-4 py-2 rounded-lg shadow-glow flex items-center gap-2 transition-all disabled:opacity-50">
                             <i class="ph-bold ph-lightning" :class="isExtracting ? 'animate-spin' : ''"></i>
-                            <span x-text="isExtracting ? 'Extracting All Pages...' : '⚡ Extract All Pages (Auto-Learn)'"></span>
+                            <span x-text="isExtracting ? `Extracting (${extractProgress.percent}% - Line ${extractProgress.current_line || 0}/${extractProgress.total_lines || '?'})...` : '⚡ Extract All Pages (Auto-Learn)'"></span>
                         </button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -469,7 +631,10 @@
                             <div class="glass p-4 rounded-xl flex flex-col gap-3">
                                 <div class="flex justify-between items-center">
                                     <span class="text-xs font-mono text-slate-400" x-text="'Page #' + (page.index + 1)"></span>
-                                    <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-brand-success/20 text-brand-success">Preprocessed</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] text-amber-400 cursor-pointer hover:underline" @click="aiModalOpen = true" x-show="!aiConfig.gemini?.api_key">⚡ Add Gemini API Key</span>
+                                        <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded bg-brand-success/20 text-brand-success">Preprocessed</span>
+                                    </div>
                                 </div>
                                 <div class="flex gap-2 h-44">
                                     <div class="flex-1 bg-slate-900 rounded overflow-hidden flex items-center justify-center border border-slate-700/50">
@@ -480,10 +645,34 @@
                                     </div>
                                 </div>
                                 <input type="text" :id="'hint_' + page.index" placeholder="Optional: transcription hint or pangram snippet" class="bg-slate-900/60 border border-slate-700/60 rounded px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-brand-primary">
+
+                                <!-- Inline Live Card Progress Bar when Extracting -->
+                                <div x-show="isExtracting || extractProgress.active" class="bg-slate-950/90 p-2.5 rounded-lg border space-y-1.5"
+                                     :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'border-emerald-500/40' : 'border-indigo-500/40'">
+                                    <div class="flex justify-between items-center text-[11px] font-mono">
+                                        <span class="truncate max-w-[200px]"
+                                              :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'text-emerald-300 font-semibold' : 'text-indigo-300'"
+                                              x-text="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? '✓ Extraction complete!' : (extractProgress.message || 'Extracting line by line...')"></span>
+                                        <span class="font-bold ml-2 shrink-0"
+                                              :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'text-emerald-400' : 'text-amber-400'"
+                                              x-text="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? '100% Done' : (extractProgress.percent + '%')"></span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                        <div class="h-full transition-all duration-300"
+                                             :class="(extractProgress.status === 'completed' || extractProgress.percent >= 100) ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-brand-primary via-purple-500 to-emerald-400'"
+                                             :style="`width: ${Math.max(5, extractProgress.percent)}%;`"></div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                                        <span x-text="'Line ' + (extractProgress.current_line || 0) + ' of ' + (extractProgress.total_lines || page.lines_detected)"></span>
+                                        <span class="text-emerald-400 font-bold" x-text="(extractProgress.words_extracted || 0) + ' words learned'"></span>
+                                    </div>
+                                </div>
+
                                 <div class="flex justify-between items-center mt-1">
                                     <span class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-300" x-text="page.lines_detected + ' lines detected'"></span>
-                                    <button @click="extractGlyphs(page.index)" :disabled="isExtracting" class="text-xs bg-brand-primary hover:bg-indigo-400 text-white px-3 py-1.5 rounded font-medium transition-colors disabled:opacity-50">
-                                        <span x-text="isExtracting ? 'Extracting...' : 'Extract & Register Glyphs'"></span>
+                                    <button @click="extractGlyphs(page.index)" :disabled="isExtracting" class="text-xs bg-brand-primary hover:bg-indigo-400 text-white px-3 py-1.5 rounded font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5">
+                                        <i x-show="isExtracting" class="ph-bold ph-spinner-gap animate-spin"></i>
+                                        <span x-text="isExtracting ? (extractProgress.percent >= 100 ? 'Finishing up...' : `Extracting (${extractProgress.percent}%)...`) : 'Extract & Register Glyphs'"></span>
                                     </button>
                                 </div>
                             </div>
@@ -670,6 +859,31 @@
                 </div>
             </div>
 
+            <!-- Gemini API Key Quick Settings -->
+            <div class="space-y-3 pt-4 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider flex items-center gap-2">
+                        <i class="ph-bold ph-key text-amber-400"></i> Gemini API Key
+                    </label>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          :class="aiConfig.gemini?.api_key ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'"
+                          x-text="aiConfig.gemini?.api_key ? 'Active' : 'Unset'"></span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="password" 
+                           x-model="aiConfig.gemini.api_key" 
+                           placeholder="AIzaSy... (fast cloud)" 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-brand-primary">
+                    <button @click="saveAIConfig()" 
+                            class="px-3 py-1.5 bg-brand-primary hover:bg-indigo-600 text-white rounded-xl text-xs font-semibold shadow-glow transition-all shrink-0">
+                        Save
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-tight">
+                    Enables ultra-fast cloud OCR & instant word rendering.
+                </p>
+            </div>
+
         </div>
         
         <!-- Stats Bottom -->
@@ -733,6 +947,8 @@
                 </button>
             </div>
         </div>
+    </div>
+
     <!-- AI Settings Modal -->
     <div x-show="aiModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4" x-cloak
          x-transition:enter="transition ease-out duration-200"
@@ -758,8 +974,8 @@
                 <div>
                     <label class="block text-slate-300 font-medium mb-1.5">Local Ollama Model (RTX 3070 GPU)</label>
                     <select x-model="aiConfig.ollama.model" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500">
-                        <option value="gemma4:12b">gemma4:12b (Recommended - Vision Deep Learning)</option>
-                        <option value="qwen3.5:4b">qwen3.5:4b (Fast 4B Vision)</option>
+                        <option value="qwen3.5:4b">qwen3.5:4b (Fast GPU VRAM — Recommended)</option>
+                        <option value="gemma4:12b">gemma4:12b (12B High Accuracy)</option>
                     </select>
                     <p class="text-[11px] text-slate-400 mt-1">Runs locally on http://localhost:11434 for private note extraction.</p>
                 </div>
@@ -882,12 +1098,67 @@ Origin of State
                     { id: 'models', name: 'AI Models', icon: 'ph-cpu' },
                 ],
 
-                // AI Provider Configuration
+                // AI Provider & Progress Tracking
+                showGeminiKey: false,
+                extractProgress: {
+                    active: false,
+                    percent: 0,
+                    current_line: 0,
+                    total_lines: 0,
+                    words_extracted: 0,
+                    status: 'idle',
+                    message: 'Ready'
+                },
+                progressPollTimer: null,
                 aiModalOpen: false,
                 aiConfig: {
                     mode: 'hybrid',
-                    ollama: { endpoint: 'http://localhost:11434', model: 'gemma4:12b' },
-                    gemini: { api_key: '', model: 'gemini-2.0-flash' }
+                    extraction_mode: 'rapidocr',
+                    ollama: { endpoint: 'http://localhost:11434', model: 'qwen3.5:4b' },
+                    gemini: { api_key: '', model: 'gemini-3.1-flash-lite' }
+                },
+
+                dismissProgress() {
+                    this.isExtracting = false;
+                    this.extractProgress.active = false;
+                    this.extractProgress.status = 'idle';
+                    this.stopProgressPolling();
+                },
+
+                startProgressPolling() {
+                    this.stopProgressPolling();
+                    this.extractProgress.active = true;
+                    this.extractProgress.status = 'starting';
+                    this.extractProgress.percent = 15;
+                    this.extractProgress.message = 'Initializing handwriting extraction pipeline...';
+
+                    const poll = async () => {
+                        try {
+                            const res = await fetch('/api/extract/progress');
+                            if (res.ok) {
+                                const data = await res.json();
+                                this.extractProgress = { ...this.extractProgress, ...data };
+                                if (data.status === 'completed' || data.percent >= 100) {
+                                    this.stopProgressPolling();
+                                    setTimeout(() => {
+                                        this.dismissProgress();
+                                    }, 2500);
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('Progress poll error:', e);
+                        }
+                    };
+
+                    poll();
+                    this.progressPollTimer = setInterval(poll, 600);
+                },
+
+                stopProgressPolling() {
+                    if (this.progressPollTimer) {
+                        clearInterval(this.progressPollTimer);
+                        this.progressPollTimer = null;
+                    }
                 },
 
                 async fetchAIConfig() {
@@ -909,7 +1180,10 @@ Origin of State
                             body: JSON.stringify(this.aiConfig)
                         });
                         if (res.ok) {
-                            this.addToast('AI Configuration saved successfully!', 'success');
+                            const data = await res.json();
+                            if (data.config) this.aiConfig = data.config;
+                            const modeStr = this.aiConfig.gemini?.api_key ? 'Cloud Gemini + Ollama (Hybrid)' : 'Local GPU (Ollama)';
+                            this.addToast(`AI settings saved! Active: ${modeStr}`, 'success');
                             this.aiModalOpen = false;
                             await this.fetchModelStatus();
                         } else {
@@ -1050,6 +1324,7 @@ Origin of State
 
                 async extractGlyphs(pageIndex) {
                     this.isExtracting = true;
+                    this.startProgressPolling();
                     const hintEl = document.getElementById('hint_' + pageIndex);
                     const hint = hintEl ? hintEl.value : '';
 
@@ -1065,16 +1340,24 @@ Origin of State
                             this.addToast(`Registered ${data.registered_count} glyphs! Total: ${data.stats.unique_characters} chars, ${data.stats.total_variants} variants.`, 'success');
                             await this.fetchGlyphs();
                         } else {
-                            this.addToast('Extraction failed.', 'error');
+                            const err = await res.json().catch(() => ({}));
+                            this.addToast('Extraction failed: ' + (err.detail || 'Server error'), 'error');
                         }
                     } catch(e) {
                         this.addToast('Extract error: ' + e.message, 'error');
+                    } finally {
+                        this.isExtracting = false;
+                        if (this.extractProgress.status === 'completed' || this.extractProgress.percent >= 100) {
+                            setTimeout(() => this.dismissProgress(), 2500);
+                        } else {
+                            this.dismissProgress();
+                        }
                     }
-                    this.isExtracting = false;
                 },
 
                 async extractAll() {
                     this.isExtracting = true;
+                    this.startProgressPolling();
                     try {
                         const res = await fetch('/api/extract-all', { method: 'POST' });
                         if (res.ok) {
@@ -1083,12 +1366,19 @@ Origin of State
                             this.addToast(`Batch learned ${data.total_extracted} glyphs! Total: ${data.stats.unique_characters} chars, ${data.stats.total_variants} variants.`, 'success');
                             await this.fetchGlyphs();
                         } else {
-                            this.addToast('Batch extraction failed.', 'error');
+                            const err = await res.json().catch(() => ({}));
+                            this.addToast('Batch extraction failed: ' + (err.detail || 'Server error'), 'error');
                         }
                     } catch(e) {
                         this.addToast('Error: ' + e.message, 'error');
+                    } finally {
+                        this.isExtracting = false;
+                        if (this.extractProgress.status === 'completed' || this.extractProgress.percent >= 100) {
+                            setTimeout(() => this.dismissProgress(), 2500);
+                        } else {
+                            this.dismissProgress();
+                        }
                     }
-                    this.isExtracting = false;
                 },
 
                 async trainNeuralModel() {

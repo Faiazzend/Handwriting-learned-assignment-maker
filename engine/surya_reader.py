@@ -187,6 +187,7 @@ class HandwritingReader:
                                             registered_count += 1
 
                         # D) Disconnected leading capital letter extraction
+                        clean_word = text.strip()
                         if clean_word and clean_word[0].isupper() and len(clean_word) > 1:
                             cap_ch = clean_word[0]
                             num_c, lbls, sts, _ = cv2.connectedComponentsWithStats(word_bin)

@@ -61,6 +61,15 @@ vision_extractor = VisionNoteExtractor(ai_provider=ai_provider)
 _uploaded_pages = {}   # session_id -> list of processed page data
 _rendered_pages = []   # last rendered page images
 _last_pdf_path = None
+_extraction_progress = {
+    "active": False,
+    "percent": 0,
+    "current_line": 0,
+    "total_lines": 0,
+    "words_extracted": 0,
+    "status": "idle",
+    "message": "Ready"
+}
 
 # ──────────────────────────────────────────────────────────────────────
 # Request/Response Models
@@ -93,7 +102,11 @@ if os.path.exists("static"):
 async def serve_index():
     index_path = os.path.join("static", "index.html")
     if os.path.exists(index_path):
-        return FileResponse(index_path)
+        response = FileResponse(index_path)
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
     return JSONResponse({"error": "Frontend not found. Place index.html in static/"}, status_code=404)
 
 # ──────────────────────────────────────────────────────────────────────
@@ -111,6 +124,7 @@ async def get_stats():
 
 class AIConfigRequest(BaseModel):
     mode: Optional[str] = "hybrid"
+    extraction_mode: Optional[str] = "auto"
     ollama: Optional[dict] = None
     gemini: Optional[dict] = None
 
@@ -120,10 +134,12 @@ async def get_ai_config():
 
 @app.post("/api/ai/config")
 async def update_ai_config(req: AIConfigRequest):
-    global ai_provider
+    global ai_provider, vision_extractor, synthesizer
     current = load_ai_config()
     if req.mode:
         current["mode"] = req.mode
+    if req.extraction_mode:
+        current["extraction_mode"] = req.extraction_mode
     if req.ollama:
         current.setdefault("ollama", {}).update(req.ollama)
     if req.gemini:
@@ -131,6 +147,8 @@ async def update_ai_config(req: AIConfigRequest):
     save_ai_config(current)
     # Re-initialize provider
     ai_provider = HybridAIProvider()
+    vision_extractor.ai = ai_provider
+    synthesizer.ai_provider = ai_provider
     return {"status": "updated", "config": current}
 
 @app.get("/api/ai/health")
@@ -240,103 +258,190 @@ async def serve_temp_image(filename: str):
         return FileResponse(path)
     raise HTTPException(status_code=404)
 
-# ──────────────────────────────────────────────────────────────────────
-# API: Extract Glyphs
-# ──────────────────────────────────────────────────────────────────────
+@app.get("/api/extract/progress")
+async def get_extraction_progress():
+    return _extraction_progress
 
 @app.post("/api/extract")
-async def extract_glyphs(req: ExtractRequest):
-    # Find the page data across sessions or recover from disk
-    page_data = None
-    for session_pages in _uploaded_pages.values():
-        for p in session_pages:
-            if p["index"] == req.page_index:
-                page_data = p
+def extract_glyphs(req: ExtractRequest):
+    global _extraction_progress
+    _extraction_progress["active"] = True
+    _extraction_progress["status"] = "starting"
+    _extraction_progress["percent"] = 10
+    _extraction_progress["message"] = f"Initializing extraction for Page #{req.page_index + 1}..."
+
+    def on_progress(info):
+        global _extraction_progress
+        _extraction_progress.update(info)
+        _extraction_progress["active"] = info.get("status") != "completed"
+
+    try:
+        # Find the page data across sessions or recover from disk
+        page_data = None
+        for session_pages in _uploaded_pages.values():
+            for p in session_pages:
+                if p["index"] == req.page_index:
+                    page_data = p
+                    break
+            if page_data:
                 break
-        if page_data:
-            break
 
-    if not page_data:
-        # Auto-recover from temp/ by page index
-        import glob
-        orig_matches = sorted(glob.glob(f"temp/*_orig_{req.page_index}.jpg"))
-        proc_matches = sorted(glob.glob(f"temp/*_proc_{req.page_index}.png"))
-        if orig_matches and proc_matches:
-            img_bgr = cv2.imread(orig_matches[-1])
-            binary = cv2.imread(proc_matches[-1], cv2.IMREAD_GRAYSCALE)
-            lines = extractor.segment_lines(binary)
-            page_data = {
-                "index": req.page_index,
-                "img_bgr": img_bgr,
-                "binary": binary,
-                "line_ranges": lines
-            }
+        if not page_data:
+            import glob
+            orig_matches = sorted(glob.glob(f"temp/*_orig_{req.page_index}.jpg"))
+            proc_matches = sorted(glob.glob(f"temp/*_proc_{req.page_index}.png"))
+            if orig_matches and proc_matches:
+                img_bgr = cv2.imread(orig_matches[-1])
+                binary = cv2.imread(proc_matches[-1], cv2.IMREAD_GRAYSCALE)
+                lines = extractor.segment_lines(binary)
+                page_data = {
+                    "index": req.page_index,
+                    "img_bgr": img_bgr,
+                    "binary": binary,
+                    "line_ranges": lines
+                }
 
-    if not page_data:
-        raise HTTPException(status_code=404, detail="Page not found. Upload notes first.")
+        if not page_data:
+            _extraction_progress["active"] = False
+            _extraction_progress["status"] = "error"
+            raise HTTPException(status_code=404, detail="Page not found. Upload notes first.")
 
-    binary = page_data["binary"]
-    img_bgr = page_data["img_bgr"]
-    line_ranges = page_data["line_ranges"]
-    registered_count = 0
+        binary = page_data["binary"]
+        img_bgr = page_data["img_bgr"]
+        line_ranges = page_data["line_ranges"]
+        registered_count = 0
 
-    # If transcript hint is provided by the user, use it
-    if req.transcript_hint and req.transcript_hint.strip():
-        hint_chars = [c for c in req.transcript_hint if not c.isspace()]
-        global_glyph_idx = 0
-        for ly1, ly2 in line_ranges:
-            line_binary = binary[ly1:ly2, :]
-            glyphs = extractor.segment_words_and_glyphs(line_binary, line_y_offset=ly1)
-            for glyph in glyphs:
-                if global_glyph_idx < len(hint_chars):
-                    extractor.register_glyph(hint_chars[global_glyph_idx], glyph["crop"])
-                    registered_count += 1
-                    global_glyph_idx += 1
-    else:
-        # Gemma 4 (12B) AI Vision reading and whole-word extraction
-        registered_count = vision_extractor.extract_from_page(img_bgr, binary, extractor, line_ranges=line_ranges)
-        if registered_count == 0:
-            # Fallback to OCR reader if vision model extracted 0
-            registered_count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=line_ranges)
+        if req.transcript_hint and req.transcript_hint.strip():
+            hint_chars = [c for c in req.transcript_hint if not c.isspace()]
+            global_glyph_idx = 0
+            for ly1, ly2 in line_ranges:
+                line_binary = binary[ly1:ly2, :]
+                glyphs = extractor.segment_words_and_glyphs(line_binary, line_y_offset=ly1)
+                for glyph in glyphs:
+                    if global_glyph_idx < len(hint_chars):
+                        extractor.register_glyph(hint_chars[global_glyph_idx], glyph["crop"])
+                        registered_count += 1
+                        global_glyph_idx += 1
+        else:
+            # Gemma 4 (12B) AI Vision reading and whole-word extraction
+            registered_count = vision_extractor.extract_from_page(
+                img_bgr, binary, extractor, line_ranges=line_ranges, progress_callback=on_progress
+            )
+            if registered_count == 0:
+                # Fallback to OCR reader if vision model extracted 0
+                registered_count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=line_ranges)
 
-    # Update synthesizer's glyph bank
-    synthesizer.glyph_bank = extractor.index
+        # Update synthesizer's glyph bank
+        synthesizer.glyph_bank = extractor.index
 
-    # Auto-augment low-variant characters to minimum 5 variants
-    aug_count = augment_glyph_bank(extractor.index, extractor.glyphs_dir, min_variants=5)
-    if aug_count > 0:
-        extractor._save_index()
-        logger.info(f"Auto-augmented {aug_count} AI variants for low-coverage characters")
+        # Auto-augment low-variant characters to minimum 5 variants
+        aug_count = augment_glyph_bank(extractor.index, extractor.glyphs_dir, min_variants=5)
+        if aug_count > 0:
+            extractor._save_index()
+            logger.info(f"Auto-augmented {aug_count} AI variants for low-coverage characters")
 
-    stats = extractor.get_stats()
-    return {"registered_count": registered_count, "augmented_count": aug_count, "stats": stats}
+        stats = extractor.get_stats()
+        _extraction_progress["active"] = False
+        _extraction_progress["status"] = "completed"
+        _extraction_progress["percent"] = 100
+        _extraction_progress["words_extracted"] = registered_count
+        _extraction_progress["message"] = f"Finished! Extracted {registered_count} words/glyphs."
+        return {"registered_count": registered_count, "augmented_count": aug_count, "stats": stats}
+    except Exception as e:
+        _extraction_progress["active"] = False
+        _extraction_progress["status"] = "error"
+        _extraction_progress["message"] = f"Extraction error: {str(e)}"
+        raise e
 
 @app.post("/api/extract-all")
-async def extract_all_pages():
-    import glob
-    orig_files = sorted(glob.glob("temp/*_orig_*.jpg"))
-    total_new = 0
+def extract_all_pages():
+    global _extraction_progress
+    _extraction_progress["active"] = True
+    _extraction_progress["status"] = "starting"
+    _extraction_progress["percent"] = 10
+    _extraction_progress["message"] = "Starting batch extraction across note pages..."
 
-    for orig_path in orig_files:
-        proc_path = orig_path.replace("_orig_", "_proc_").replace(".jpg", ".png")
-        if os.path.exists(proc_path):
-            img_bgr = cv2.imread(orig_path)
-            binary = cv2.imread(proc_path, cv2.IMREAD_GRAYSCALE)
-            lines = extractor.segment_lines(binary)
-            count = vision_extractor.extract_from_page(img_bgr, binary, extractor, line_ranges=lines)
+    try:
+        # Determine pages to extract: prioritize active session pages
+        pages_to_extract = []
+        if _uploaded_pages:
+            # Use pages from the most recent active upload session
+            latest_session_id = list(_uploaded_pages.keys())[-1]
+            pages_to_extract = _uploaded_pages[latest_session_id]
+
+        if not pages_to_extract:
+            # Fallback to disk: only grab the latest uploaded session (not 47 stale files)
+            import glob
+            all_orig = sorted(glob.glob("temp/*_orig_*.jpg"), key=os.path.getmtime, reverse=True)
+            if all_orig:
+                latest_sess = os.path.basename(all_orig[0]).split("_orig_")[0]
+                session_orig_files = sorted(glob.glob(f"temp/{latest_sess}_orig_*.jpg"))
+                for s_file in session_orig_files:
+                    p_file = s_file.replace("_orig_", "_proc_").replace(".jpg", ".png")
+                    if os.path.exists(p_file):
+                        img_bgr = cv2.imread(s_file)
+                        binary = cv2.imread(p_file, cv2.IMREAD_GRAYSCALE)
+                        lines = extractor.segment_lines(binary)
+                        pages_to_extract.append({
+                            "img_bgr": img_bgr,
+                            "binary": binary,
+                            "line_ranges": lines
+                        })
+
+        if not pages_to_extract:
+            _extraction_progress["active"] = False
+            _extraction_progress["status"] = "error"
+            _extraction_progress["message"] = "No scanned pages found. Please upload notes first."
+            raise HTTPException(status_code=404, detail="No note pages found. Upload notes first.")
+
+        total_pages = len(pages_to_extract)
+        total_new = 0
+
+        for p_i, p_data in enumerate(pages_to_extract):
+            def make_page_cb(page_idx, num_pages, curr_total):
+                def cb(info):
+                    global _extraction_progress
+                    p_pct = info.get("percent", 0)
+                    overall_pct = int(((page_idx + (p_pct / 100.0)) / max(num_pages, 1)) * 95) + 5
+                    _extraction_progress["active"] = True
+                    _extraction_progress["status"] = "processing"
+                    _extraction_progress["percent"] = min(98, max(5, overall_pct))
+                    _extraction_progress["current_line"] = info.get("current_line", 0)
+                    _extraction_progress["total_lines"] = info.get("total_lines", 0)
+                    _extraction_progress["words_extracted"] = curr_total + info.get("words_extracted", 0)
+                    _extraction_progress["message"] = f"Page {page_idx + 1}/{num_pages}: {info.get('message', '')}"
+                return cb
+
+            img_bgr = p_data["img_bgr"]
+            binary = p_data["binary"]
+            lines = p_data["line_ranges"]
+            count = vision_extractor.extract_from_page(
+                img_bgr, binary, extractor, line_ranges=lines,
+                progress_callback=make_page_cb(p_i, total_pages, total_new)
+            )
             if count == 0:
                 count = reader.read_and_align(img_bgr, binary, extractor, line_ranges=lines)
             total_new += count
 
-    synthesizer.glyph_bank = extractor.index
+        synthesizer.glyph_bank = extractor.index
 
-    # Auto-augment low-variant characters
-    aug_count = augment_glyph_bank(extractor.index, extractor.glyphs_dir, min_variants=5)
-    if aug_count > 0:
-        extractor._save_index()
+        # Auto-augment low-variant characters
+        aug_count = augment_glyph_bank(extractor.index, extractor.glyphs_dir, min_variants=5)
+        if aug_count > 0:
+            extractor._save_index()
 
-    stats = extractor.get_stats()
-    return {"total_extracted": total_new, "augmented_count": aug_count, "stats": stats}
+        stats = extractor.get_stats()
+        _extraction_progress["active"] = False
+        _extraction_progress["status"] = "completed"
+        _extraction_progress["percent"] = 100
+        _extraction_progress["words_extracted"] = total_new
+        _extraction_progress["message"] = f"Batch extraction complete! Total {total_new} words/glyphs learned across {total_pages} page(s)."
+        return {"total_extracted": total_new, "augmented_count": aug_count, "stats": stats}
+    except Exception as e:
+        _extraction_progress["active"] = False
+        _extraction_progress["status"] = "error"
+        _extraction_progress["message"] = f"Batch extraction error: {str(e)}"
+        raise e
 
 @app.post("/api/train-neural")
 async def train_neural_model():
@@ -373,7 +478,7 @@ async def validate_text(req: ValidateTextRequest):
     }
 
 @app.post("/api/generate")
-async def generate_assignment(req: GenerateRequest):
+def generate_assignment(req: GenerateRequest):
     global _rendered_pages, _last_pdf_path
 
     try:
@@ -553,4 +658,4 @@ if __name__ == "__main__":
     print("  Personalized Handwriting Assignment Maker v2.0")
     print("  Open in browser:  http://localhost:8000")
     print("=" * 60 + "\n")
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
+    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False, log_level="info")
